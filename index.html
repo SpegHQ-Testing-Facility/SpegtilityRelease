@@ -994,7 +994,10 @@
             <div class="key-info-box">
               <div class="key-info-row">
                 <span>Key Code</span>
-                <span id="keyCardCode" style="color:var(--accent);">None</span>
+                <div style="display:flex; align-items:center; gap:8px;">
+                  <span id="keyCardCode" style="color:var(--accent); font-family:var(--mono); font-weight:600;">None</span>
+                  <button type="button" class="btn btn-secondary btn-sm" id="btnRefreshKeyCode" style="padding:2px 8px; font-size:11px; display:none;" onclick="handleRefreshKeyCode()" title="Generate new key code">↻ Refresh</button>
+                </div>
               </div>
               <div class="key-info-row">
                 <span>Tier</span>
@@ -1429,6 +1432,54 @@
       }
     }
 
+    // Refresh Key Code (Regenerates code, keeps same license record)
+    async function handleRefreshKeyCode() {
+      if (!currentUser || !currentKey || !currentKey.key_code) {
+        alert("No active license key found to refresh.");
+        return;
+      }
+
+      if (!confirm("Are you sure you want to generate a new key code for your active license?\n\nYour key's tier, expiration, and database record will remain unchanged.")) {
+        return;
+      }
+
+      const btn = document.getElementById('btnRefreshKeyCode');
+      if (btn) {
+        btn.disabled = true;
+        btn.innerText = "Refreshing...";
+      }
+
+      try {
+        const res = await callRpc("speg_refresh_key_code", {
+          p_user_id: currentUser.id
+        });
+
+        if (!res.success) {
+          alert(`Failed to refresh key code: ${res.error || 'Unknown error'}`);
+          return;
+        }
+
+        const newCode = res.new_key_code;
+        currentKey.key_code = newCode;
+        if (res.key) {
+          Object.assign(currentKey, res.key);
+        }
+        currentUser.active_key_code = newCode;
+        localStorage.setItem(LS_USER, JSON.stringify(currentUser));
+        localStorage.setItem(LS_KEY, JSON.stringify(currentKey));
+
+        updateAuthState();
+        alert(`Keycode refreshed successfully!\n\nNew key code: ${newCode}`);
+      } catch (err) {
+        alert(`Error: ${err.message}`);
+      } finally {
+        if (btn) {
+          btn.disabled = false;
+          btn.innerText = "↻ Refresh";
+        }
+      }
+    }
+
     // Logout
     function handleLogout() {
       currentUser = null;
@@ -1482,18 +1533,21 @@
         }
 
         // Key Card
+        const refreshBtn = document.getElementById('btnRefreshKeyCode');
         if (currentKey) {
           document.getElementById('keyCardCode').innerText = currentKey.key_code || 'None';
           document.getElementById('keyCardTier').innerText = currentKey.tier || 'Standard';
           document.getElementById('keyCardStatus').innerHTML = `<span class="badge badge-${currentKey.status || 'active'}">${currentKey.status || 'active'}</span>`;
           document.getElementById('keyCardTag').innerText = currentKey.tag || 'Standard User';
           document.getElementById('keyCardExpires').innerText = currentKey.expires_at ? new Date(currentKey.expires_at).toLocaleDateString() : 'Never (Lifetime)';
+          if (refreshBtn) refreshBtn.style.display = (currentKey.key_code && currentKey.status === 'active') ? 'inline-block' : 'none';
         } else {
           document.getElementById('keyCardCode').innerText = 'No active key';
           document.getElementById('keyCardTier').innerText = 'None';
           document.getElementById('keyCardStatus').innerHTML = '<span class="badge badge-expired">Unlicensed</span>';
           document.getElementById('keyCardTag').innerText = '—';
           document.getElementById('keyCardExpires').innerText = '—';
+          if (refreshBtn) refreshBtn.style.display = 'none';
         }
 
       } else {
