@@ -1,0 +1,1891 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Spegtility - The Ultimate Roblox Automation & Tooling Suite</title>
+  <meta name="description" content="Spegtility is the premier desktop companion for Roblox: high-performance Circle Tracker, Cursor Shaker & Changer, Live Server Manager, Avatar Rotator, Piano Player, and Social Friends Network.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/png" href="assets/app_icon.png">
+
+  <style>
+    /* ==========================================================================
+       Midnight OLED Theme Design System (Exact match to Spegtility Desktop App)
+       ========================================================================== */
+    :root {
+      --bg: #000000;
+      --sidebar: #06070a;
+      --card: #0c0d12;
+      --card-hover: #141620;
+      --border: #1b1e2a;
+      --border-subtle: #12141c;
+      --input: #12141c;
+      --text: #ffffff;
+      --muted: #757c91;
+      --accent: #8b5cf6;
+      --accent-hover: #7c3aed;
+      --accent-soft: #1c1433;
+      --dropdown-hover: #251a4a;
+      --success: #22c55e;
+      --warning: #f5a524;
+      --danger: #ef4444;
+      --font: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      --mono: 'JetBrains Mono', monospace;
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 14px;
+      --radius-pill: 9999px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: var(--font);
+      min-height: 100vh;
+      overflow-x: hidden;
+      scroll-behavior: smooth;
+    }
+
+    ::selection {
+      background: var(--accent);
+      color: #ffffff;
+    }
+
+    /* Scrollbars matching the desktop UI */
+    ::-webkit-scrollbar {
+      width: 7px;
+      height: 7px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #000000;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #1b1e2a;
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #252a3b;
+    }
+
+    /* Background Interactive Starfield Canvas (identical to theme.py StarfieldVisualizer) */
+    #starfieldCanvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    /* Main Application Shell */
+    .app-shell {
+      position: relative;
+      z-index: 10;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    /* ==========================================================================
+       Top Navigation Bar
+       ========================================================================== */
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: #06070a;
+      border-bottom: 1px solid var(--border);
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 28px;
+    }
+
+    .brand-wrap {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      cursor: pointer;
+      text-decoration: none;
+      user-select: none;
+    }
+
+    .brand-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: var(--radius-sm);
+      object-fit: contain;
+    }
+
+    .brand-title {
+      font-size: 17px;
+      font-weight: 700;
+      letter-spacing: -0.3px;
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .brand-version {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--accent);
+      background: var(--accent-soft);
+      border: 1px solid rgba(139, 92, 246, 0.3);
+      padding: 2px 7px;
+      border-radius: var(--radius-pill);
+      letter-spacing: 0.2px;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .nav-item {
+      background: transparent;
+      border: 1px solid transparent;
+      color: var(--muted);
+      font-family: var(--font);
+      font-size: 13.5px;
+      font-weight: 600;
+      padding: 8px 14px;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      text-decoration: none;
+      transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+    }
+    .nav-item:hover {
+      color: #ffffff;
+      background: #141620;
+      border-color: var(--border);
+    }
+    .nav-item.active {
+      color: #ffffff;
+      background: #0c0d12;
+      border-color: var(--border);
+    }
+
+    .nav-admin-btn {
+      color: var(--accent) !important;
+      background: var(--accent-soft) !important;
+      border: 1px solid rgba(139, 92, 246, 0.4) !important;
+      display: none; /* Only revealed dynamically if user has Developer key/tag */
+    }
+    .nav-admin-btn:hover {
+      background: #251a4a !important;
+      border-color: var(--accent) !important;
+    }
+
+    .nav-account-btn {
+      background: #0c0d12;
+      border: 1px solid var(--border);
+      color: #ffffff;
+      padding: 5px 12px 5px 6px;
+      border-radius: var(--radius-pill);
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 600;
+      transition: background 0.15s ease, border-color 0.15s ease;
+      margin-left: 6px;
+    }
+    .nav-account-btn:hover {
+      border-color: var(--accent);
+      background: #141620;
+    }
+    .nav-user-avatar {
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      background: var(--accent-soft);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      font-size: 12px;
+      border: 1px solid rgba(139, 92, 246, 0.3);
+    }
+    .nav-user-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    /* View Sections */
+    .view-section {
+      display: none;
+      width: 100%;
+      flex: 1;
+    }
+    .view-section.active {
+      display: block;
+    }
+
+    /* ==========================================================================
+       HOME LANDING PAGE
+       ========================================================================== */
+    .hero {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 72px 24px 50px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--accent-soft);
+      border: 1px solid rgba(139, 92, 246, 0.3);
+      padding: 5px 14px;
+      border-radius: var(--radius-pill);
+      font-size: 12.5px;
+      font-weight: 600;
+      color: #d8b4fe;
+      margin-bottom: 24px;
+      letter-spacing: 0.2px;
+    }
+    .hero-badge span.pulse-dot {
+      width: 7px;
+      height: 7px;
+      background: var(--success);
+      border-radius: 50%;
+    }
+
+    .hero h1 {
+      font-size: clamp(34px, 5.5vw, 60px);
+      font-weight: 800;
+      line-height: 1.12;
+      letter-spacing: -1.5px;
+      color: #ffffff;
+      max-width: 900px;
+      margin-bottom: 18px;
+    }
+
+    .hero p {
+      font-size: clamp(15px, 2vw, 18px);
+      line-height: 1.6;
+      color: var(--muted);
+      max-width: 680px;
+      margin-bottom: 36px;
+    }
+
+    .hero-actions {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-bottom: 44px;
+    }
+
+    .btn {
+      font-family: var(--font);
+      font-size: 14px;
+      font-weight: 600;
+      padding: 12px 24px;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      text-decoration: none;
+      transition: background 0.15s ease, border-color 0.15s ease;
+      border: 1px solid transparent;
+      user-select: none;
+    }
+    .btn-primary {
+      background: var(--accent);
+      color: #ffffff;
+    }
+    .btn-primary:hover {
+      background: var(--accent-hover);
+    }
+    .btn-secondary {
+      background: var(--card);
+      border-color: var(--border);
+      color: #ffffff;
+    }
+    .btn-secondary:hover {
+      background: var(--card-hover);
+      border-color: var(--muted);
+    }
+    .btn-sm {
+      padding: 6px 12px;
+      font-size: 12px;
+      border-radius: 5px;
+    }
+    .btn-danger {
+      background: rgba(239, 68, 68, 0.12);
+      border-color: rgba(239, 68, 68, 0.3);
+      color: #f87171;
+    }
+    .btn-danger:hover {
+      background: var(--danger);
+      color: #ffffff;
+    }
+
+    .hero-meta {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+    .hero-meta div {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* Feature Grid Section */
+    .section-wrap {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 40px 24px 60px;
+    }
+
+    .section-hdr {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+    .section-hdr h2 {
+      font-size: 28px;
+      font-weight: 800;
+      letter-spacing: -0.6px;
+      margin-bottom: 10px;
+      color: #ffffff;
+    }
+    .section-hdr p {
+      color: var(--muted);
+      font-size: 15px;
+      max-width: 540px;
+      margin: 0 auto;
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(310px, 1fr));
+      gap: 20px;
+    }
+
+    .feature-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      transition: background 0.15s ease, border-color 0.15s ease;
+    }
+    .feature-card:hover {
+      background: var(--card-hover);
+      border-color: var(--border-subtle);
+    }
+    .feature-icon-wrap {
+      width: 42px;
+      height: 42px;
+      border-radius: var(--radius-sm);
+      background: var(--accent-soft);
+      border: 1px solid rgba(139, 92, 246, 0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      margin-bottom: 16px;
+      color: var(--accent);
+    }
+    .feature-card h3 {
+      font-size: 17px;
+      font-weight: 700;
+      color: #ffffff;
+      margin-bottom: 8px;
+    }
+    .feature-card p {
+      font-size: 13.5px;
+      color: var(--muted);
+      line-height: 1.55;
+      flex: 1;
+      margin-bottom: 16px;
+    }
+    .feature-tags {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+    .tag-badge {
+      font-size: 11px;
+      font-weight: 600;
+      color: #c4b5fd;
+      background: var(--input);
+      border: 1px solid var(--border);
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-family: var(--mono);
+    }
+
+    .banner-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 32px;
+      margin-top: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+      flex-wrap: wrap;
+    }
+    .banner-text h3 {
+      font-size: 21px;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+    .banner-text p {
+      color: var(--muted);
+      font-size: 14px;
+      max-width: 500px;
+    }
+
+    /* ==========================================================================
+       ACCOUNT PAGE
+       ========================================================================== */
+    .account-container {
+      max-width: 760px;
+      margin: 40px auto 80px;
+      padding: 0 20px;
+    }
+
+    .account-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 32px;
+    }
+
+    .account-tabs {
+      display: flex;
+      gap: 6px;
+      background: #06070a;
+      padding: 4px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+      margin-bottom: 24px;
+    }
+    .account-tab-btn {
+      flex: 1;
+      padding: 9px;
+      text-align: center;
+      font-weight: 600;
+      font-size: 13px;
+      color: var(--muted);
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      border-radius: 4px;
+      transition: background 0.15s ease, color 0.15s ease;
+    }
+    .account-tab-btn.active {
+      color: #ffffff;
+      background: var(--card);
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+    }
+    .form-group label {
+      display: block;
+      font-size: 11px;
+      font-weight: 600;
+      color: #cbd5e1;
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .form-input, .form-select {
+      width: 100%;
+      background: var(--input);
+      border: 1px solid var(--border);
+      color: var(--text);
+      font-family: var(--font);
+      font-size: 13.5px;
+      padding: 10px 12px;
+      border-radius: var(--radius-sm);
+      outline: none;
+      transition: border-color 0.15s ease;
+    }
+    .form-input:focus, .form-select:focus {
+      border-color: var(--accent);
+    }
+
+    .profile-hero {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      padding-bottom: 24px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 24px;
+    }
+    .profile-avatar-big {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      background: var(--accent-soft);
+      border: 2px solid var(--accent);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 26px;
+      overflow: hidden;
+    }
+    .profile-avatar-big img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .profile-meta h3 {
+      font-size: 19px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .profile-meta p {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 8px;
+      border-radius: var(--radius-pill);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.2px;
+    }
+    .badge-dev {
+      background: var(--accent-soft);
+      border: 1px solid var(--accent);
+      color: #d8b4fe;
+    }
+    .badge-active {
+      background: rgba(34, 197, 94, 0.12);
+      border: 1px solid rgba(34, 197, 94, 0.3);
+      color: #4ade80;
+    }
+    .badge-expired {
+      background: rgba(245, 165, 36, 0.12);
+      border: 1px solid rgba(245, 165, 36, 0.3);
+      color: #fcd34d;
+    }
+    .badge-banned {
+      background: rgba(239, 68, 68, 0.12);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      color: #f87171;
+    }
+
+    .key-info-box {
+      background: #06070a;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 16px 20px;
+      margin-bottom: 24px;
+    }
+    .key-info-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 7px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+      font-size: 13px;
+    }
+    .key-info-row:last-child {
+      border-bottom: none;
+    }
+    .key-info-row span:first-child {
+      color: var(--muted);
+    }
+    .key-info-row span:last-child {
+      font-weight: 600;
+      font-family: var(--mono);
+    }
+
+    /* ==========================================================================
+       ADMIN DASHBOARD
+       ========================================================================== */
+    .admin-container {
+      max-width: 1300px;
+      margin: 0 auto;
+      padding: 28px 24px 60px;
+    }
+
+    .admin-metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 14px;
+      margin-bottom: 24px;
+    }
+    .metric-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 18px;
+    }
+    .metric-lbl {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 4px;
+    }
+    .metric-val {
+      font-size: 28px;
+      font-weight: 800;
+      color: #ffffff;
+      font-family: var(--mono);
+    }
+
+    .admin-nav-bar {
+      display: flex;
+      gap: 8px;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 14px;
+      margin-bottom: 24px;
+    }
+    .admin-tab-btn {
+      background: var(--card);
+      border: 1px solid var(--border);
+      color: var(--muted);
+      font-family: var(--font);
+      font-size: 13px;
+      font-weight: 600;
+      padding: 8px 16px;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+    }
+    .admin-tab-btn:hover {
+      color: #fff;
+      background: var(--card-hover);
+    }
+    .admin-tab-btn.active {
+      background: var(--accent);
+      color: #fff;
+      border-color: var(--accent);
+    }
+
+    .table-container {
+      width: 100%;
+      overflow-x: auto;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+      text-align: left;
+    }
+    th {
+      background: #06070a;
+      color: var(--muted);
+      font-weight: 600;
+      text-transform: uppercase;
+      font-size: 11px;
+      letter-spacing: 0.5px;
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border);
+    }
+    td {
+      padding: 12px 16px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+      color: #cbd5e1;
+    }
+    tr:hover td {
+      background: rgba(20, 22, 32, 0.4);
+    }
+    td.mono {
+      font-family: var(--mono);
+    }
+
+    /* Modal */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.85);
+      z-index: 999;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .modal-backdrop.open {
+      display: flex;
+    }
+    .modal-box {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      width: 100%;
+      max-width: 520px;
+      padding: 28px;
+    }
+
+    footer {
+      border-top: 1px solid var(--border);
+      background: #06070a;
+      padding: 32px 24px;
+      margin-top: auto;
+      text-align: center;
+      color: var(--muted);
+      font-size: 13px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Starfield Canvas: Interactive 3-link constellation matching desktop app theme.py -->
+  <canvas id="starfieldCanvas"></canvas>
+
+  <div class="app-shell">
+
+    <!-- Top Navigation Bar -->
+    <header class="topbar">
+      <a class="brand-wrap" onclick="showSection('home')">
+        <img src="assets/app_icon.png" alt="Spegtility Logo" class="brand-icon">
+        <span class="brand-title">Spegtility <span class="brand-version">v1.4.5</span></span>
+      </a>
+
+      <nav class="nav-links">
+        <button class="nav-item active" id="nav-btn-home" onclick="showSection('home')">
+          🏠 Home
+        </button>
+        <button class="nav-item" id="nav-btn-features" onclick="scrollToFeatures()">
+          ⚡ Features
+        </button>
+        <a class="nav-item" href="https://github.com/SpegHQ-Testing-Facility/SpegtilityRelease/releases/latest" target="_blank">
+          📥 Download
+        </a>
+        <button class="nav-item nav-admin-btn" id="nav-btn-admin" onclick="showSection('admin')">
+          🔨 Admin Dashboard
+        </button>
+        <button class="nav-account-btn" id="nav-btn-account" onclick="showSection('account')">
+          <div class="nav-user-avatar" id="topAvatar">👤</div>
+          <span id="topUsername">Sign In</span>
+        </button>
+      </nav>
+    </header>
+
+    <!-- VIEW 1: HOME LANDING PAGE -->
+    <main id="view-home" class="view-section active">
+      <div class="hero">
+        <div class="hero-badge">
+          <span class="pulse-dot"></span>
+          <span>Spegtility 1.4.5 Available for Windows</span>
+        </div>
+
+        <h1>
+          The All-In-One <br>
+          Roblox Automation & Tooling Suite
+        </h1>
+
+        <p>
+          High-performance desktop suite designed for competitive players and creators. Fast, frameless Midnight OLED interface packed with tracking, cursor replacements, server rejoin, in-game friend chat, and real-time session syncing.
+        </p>
+
+        <div class="hero-actions">
+          <a href="https://github.com/SpegHQ-Testing-Facility/SpegtilityRelease/releases/latest" class="btn btn-primary" target="_blank">
+            <span>📥 Download Spegtility.exe</span>
+          </a>
+          <button class="btn btn-secondary" onclick="showSection('account')">
+            <span>🔑 Redeem License / Account</span>
+          </button>
+        </div>
+
+        <div class="hero-meta">
+          <div>🛡️ HWID Machine Lock Protection</div>
+          <div>⚡ 0% Idle CPU Overhead</div>
+          <div>🌑 Midnight OLED Theme</div>
+        </div>
+      </div>
+
+      <!-- Features Showcase Section -->
+      <section class="section-wrap" id="featuresSection">
+        <div class="section-hdr">
+          <h2>Engineered for Speed and Precision</h2>
+          <p>Every tool is designed to run seamlessly alongside Roblox without input lag or stuttering.</p>
+        </div>
+
+        <div class="features-grid">
+          <!-- Circle Tracker -->
+          <div class="feature-card">
+            <div class="feature-icon-wrap">🎯</div>
+            <h3>Circle Tracker</h3>
+            <p>Fast color and circle detection with configurable FOV circles, precision lead prediction, visual crosshairs, and multi-swatch target filtering.</p>
+            <div class="feature-tags">
+              <span class="tag-badge">Win32 API</span>
+              <span class="tag-badge">Adaptive FOV</span>
+              <span class="tag-badge">Zero Latency</span>
+            </div>
+          </div>
+
+          <!-- Server Manager -->
+          <div class="feature-card">
+            <div class="feature-icon-wrap">🌐</div>
+            <h3>Server Manager</h3>
+            <p>Non-blocking log parsing automatically tracks your active Roblox Place ID, Job ID, and Ping. Reconnect, hop servers, or copy direct join links in 1 click.</p>
+            <div class="feature-tags">
+              <span class="tag-badge">Fast Tail Reader</span>
+              <span class="tag-badge">Job ID Tracker</span>
+              <span class="tag-badge">Auto Rejoin</span>
+            </div>
+          </div>
+
+          <!-- Cursor Changer & Shaker -->
+          <div class="feature-card">
+            <div class="feature-icon-wrap">🖱️</div>
+            <h3>Cursor Changer & Shaker</h3>
+            <p>Instantly replace default Roblox mouse cursors with clean custom designs or trigger micro cursor shaking to avoid idle kicks.</p>
+            <div class="feature-tags">
+              <span class="tag-badge">Custom Cursors</span>
+              <span class="tag-badge">Anti-AFK</span>
+              <span class="tag-badge">Non-intrusive</span>
+            </div>
+          </div>
+
+          <!-- Piano Player -->
+          <div class="feature-card">
+            <div class="feature-icon-wrap">🎹</div>
+            <h3>Piano Player</h3>
+            <p>Load complex MIDI and sheet music files. Automatically plays piano songs with millisecond timing directly inside Roblox instruments.</p>
+            <div class="feature-tags">
+              <span class="tag-badge">MIDI Support</span>
+              <span class="tag-badge">Key Mapping</span>
+              <span class="tag-badge">Adjustable BPM</span>
+            </div>
+          </div>
+
+          <!-- Avatar Rotator -->
+          <div class="feature-card">
+            <div class="feature-icon-wrap">🔄</div>
+            <h3>Avatar Rotator</h3>
+            <p>Smooth 360-degree high-speed rotation controller with custom RPM sliders and keybindings for showcase.</p>
+            <div class="feature-tags">
+              <span class="tag-badge">Speed Sliders</span>
+              <span class="tag-badge">Hotkeys</span>
+              <span class="tag-badge">Smooth Spin</span>
+            </div>
+          </div>
+
+          <!-- Friends & Social -->
+          <div class="feature-card">
+            <div class="feature-icon-wrap">💬</div>
+            <h3>Friends & Social Hub</h3>
+            <p>Add friends, see their live Roblox status (Online / In Menu / In Game), direct message in real-time, and get desktop notification badges.</p>
+            <div class="feature-tags">
+              <span class="tag-badge">Presence Sync</span>
+              <span class="tag-badge">In-App DMs</span>
+              <span class="tag-badge">Social Badges</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="banner-card">
+          <div class="banner-text">
+            <h3>Ready to step up your Roblox gameplay?</h3>
+            <p>Download Spegtility v1.4.5 directly from our official release repository or create an account to activate your license key.</p>
+          </div>
+          <a href="https://github.com/SpegHQ-Testing-Facility/SpegtilityRelease/releases/latest" class="btn btn-primary" target="_blank">
+            <span>Download for Windows</span>
+          </a>
+        </div>
+      </section>
+    </main>
+
+    <!-- VIEW 2: ACCOUNT PAGE -->
+    <main id="view-account" class="view-section">
+      <div class="account-container">
+        
+        <div class="account-tabs" id="authTabsContainer">
+          <button class="account-tab-btn active" id="tabBtnLogin" onclick="setAuthTab('login')">Sign In</button>
+          <button class="account-tab-btn" id="tabBtnRegister" onclick="setAuthTab('register')">Register New Account</button>
+        </div>
+
+        <div class="account-card">
+
+          <!-- Sign In Form -->
+          <div id="authPanelLogin">
+            <h2 style="font-size:20px; font-weight:700; margin-bottom:6px;">Sign In to Spegtility</h2>
+            <p style="color:var(--muted); font-size:13.5px; margin-bottom:20px;">Enter your credentials to access your profile and license status.</p>
+
+            <form onsubmit="handleLogin(event)">
+              <div class="form-group">
+                <label>Email Address</label>
+                <input type="email" id="loginEmail" class="form-input" placeholder="user@example.com" required>
+              </div>
+              <div class="form-group">
+                <label>Password</label>
+                <input type="password" id="loginPassword" class="form-input" placeholder="••••••••" required>
+              </div>
+              <button type="submit" class="btn btn-primary" style="width:100%; justify-content:center; margin-top:8px;" id="loginSubmitBtn">
+                Sign In
+              </button>
+            </form>
+          </div>
+
+          <!-- Register Form -->
+          <div id="authPanelRegister" style="display:none;">
+            <h2 style="font-size:20px; font-weight:700; margin-bottom:6px;">Create an Account</h2>
+            <p style="color:var(--muted); font-size:13.5px; margin-bottom:20px;">Create your account to save settings and bind license keys.</p>
+
+            <form onsubmit="handleRegister(event)">
+              <div class="form-group">
+                <label>Username</label>
+                <input type="text" id="regUsername" class="form-input" placeholder="Desired username" required>
+              </div>
+              <div class="form-group">
+                <label>Email Address</label>
+                <input type="email" id="regEmail" class="form-input" placeholder="user@example.com" required>
+              </div>
+              <div class="form-group">
+                <label>Password</label>
+                <input type="password" id="regPassword" class="form-input" placeholder="At least 6 characters" minlength="6" required>
+              </div>
+              <button type="submit" class="btn btn-primary" style="width:100%; justify-content:center; margin-top:8px;" id="regSubmitBtn">
+                Register Account
+              </button>
+            </form>
+          </div>
+
+          <!-- Profile & Key Panel -->
+          <div id="authPanelProfile" style="display:none;">
+            <div class="profile-hero">
+              <div class="profile-avatar-big" id="profileBigAvatar">👤</div>
+              <div class="profile-meta">
+                <h3 id="profileUsername">Username</h3>
+                <p id="profileEmail">user@example.com</p>
+                <div style="margin-top:6px;" id="profileTagWrap"></div>
+              </div>
+              <div style="margin-left:auto;">
+                <button class="btn btn-secondary btn-sm" onclick="handleLogout()">Sign Out</button>
+              </div>
+            </div>
+
+            <h3 style="font-size:15px; font-weight:700; margin-bottom:10px;">Active License Key</h3>
+            <div class="key-info-box">
+              <div class="key-info-row">
+                <span>Key Code</span>
+                <span id="keyCardCode" style="color:var(--accent);">None</span>
+              </div>
+              <div class="key-info-row">
+                <span>Tier</span>
+                <span id="keyCardTier">—</span>
+              </div>
+              <div class="key-info-row">
+                <span>Status</span>
+                <span id="keyCardStatus">—</span>
+              </div>
+              <div class="key-info-row">
+                <span>Role / Tag</span>
+                <span id="keyCardTag">—</span>
+              </div>
+              <div class="key-info-row">
+                <span>Expires At</span>
+                <span id="keyCardExpires">—</span>
+              </div>
+            </div>
+
+            <h3 style="font-size:15px; font-weight:700; margin-bottom:10px;">Redeem License Key</h3>
+            <form onsubmit="handleRedeem(event)" style="display:flex; gap:10px; flex-wrap:wrap;">
+              <input type="text" id="redeemKeyInput" class="form-input" placeholder="SPEG-XXXX-XXXX-XXXX-XXXX" style="flex:1; min-width:240px; text-transform:uppercase; font-family:var(--mono);" required>
+              <button type="submit" class="btn btn-primary" id="redeemSubmitBtn">Redeem Key</button>
+            </form>
+          </div>
+
+        </div>
+      </div>
+    </main>
+
+    <!-- VIEW 3: ADMIN DASHBOARD (Locked for Developer Tag) -->
+    <main id="view-admin" class="view-section">
+      <div class="admin-container">
+        
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; flex-wrap:wrap; gap:12px;">
+          <div>
+            <h1 style="font-size:24px; font-weight:800; letter-spacing:-0.4px;">🔨 Developer Admin Portal</h1>
+            <p style="color:var(--muted); font-size:13.5px;">Authorized access for Developer tagged keyholders.</p>
+          </div>
+
+          <div style="display:flex; gap:8px;">
+            <button class="btn btn-primary btn-sm" onclick="openKeyGenModal()">⚡ Generate Keys</button>
+            <button class="btn btn-secondary btn-sm" onclick="refreshAdminData()">🔄 Refresh</button>
+          </div>
+        </div>
+
+        <div class="admin-metrics-grid">
+          <div class="metric-card">
+            <div class="metric-lbl">Total Registered Users</div>
+            <div class="metric-val" id="metricTotalUsers">0</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-lbl">Total Keys Issued</div>
+            <div class="metric-val" id="metricTotalKeys">0</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-lbl">Active Claimed Keys</div>
+            <div class="metric-val" id="metricActiveKeys" style="color:var(--success);">0</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-lbl">Unclaimed Keys</div>
+            <div class="metric-val" id="metricUnclaimedKeys" style="color:var(--warning);">0</div>
+          </div>
+        </div>
+
+        <div class="admin-nav-bar">
+          <button class="admin-tab-btn active" id="admTabBtnKeys" onclick="setAdminTab('keys')">🔑 All Keys</button>
+          <button class="admin-tab-btn" id="admTabBtnUsers" onclick="setAdminTab('users')">👥 User Accounts</button>
+        </div>
+
+        <!-- Keys Subtab -->
+        <div id="admViewKeys">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; gap:10px; flex-wrap:wrap;">
+            <input type="text" id="adminKeySearch" class="form-input" placeholder="Search key code, tag, notes..." style="max-width:300px;" oninput="renderAdminKeys()">
+            <select id="adminKeyFilter" class="form-select" style="width:170px;" onchange="renderAdminKeys()">
+              <option value="all">All Statuses</option>
+              <option value="active">Active</option>
+              <option value="unclaimed">Unclaimed</option>
+              <option value="expired">Expired</option>
+              <option value="banned">Banned</option>
+            </select>
+          </div>
+
+          <div class="table-container">
+            <table>
+              <thead>
+                <tr>
+                  <th>Key Code</th>
+                  <th>Tier</th>
+                  <th>Tag</th>
+                  <th>Status</th>
+                  <th>Bound HWID</th>
+                  <th>Expires</th>
+                  <th>Notes</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="adminKeysTbody">
+                <tr><td colspan="8" style="text-align:center; color:var(--muted); padding:28px;">Loading keys...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Users Subtab -->
+        <div id="admViewUsers" style="display:none;">
+          <div style="margin-bottom:12px;">
+            <input type="text" id="adminUserSearch" class="form-input" placeholder="Search username, email, active key..." style="max-width:320px;" oninput="renderAdminUsers()">
+          </div>
+
+          <div class="table-container">
+            <table>
+              <thead>
+                <tr>
+                  <th>User</th>
+                  <th>Active Key</th>
+                  <th>User ID</th>
+                  <th>Bound HWID</th>
+                  <th>Status</th>
+                  <th>Joined</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="adminUsersTbody">
+                <tr><td colspan="7" style="text-align:center; color:var(--muted); padding:28px;">Loading users...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+    </main>
+
+    <footer>
+      <p>© 2026 Spegtility. All rights reserved. Spegtility is not affiliated with or endorsed by Roblox Corporation.</p>
+    </footer>
+
+  </div>
+
+  <!-- KEY GENERATOR MODAL -->
+  <div class="modal-backdrop" id="modalKeyGen">
+    <div class="modal-box">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:18px;">
+        <h2 style="font-size:18px; font-weight:700;">⚡ Batch Key Generator</h2>
+        <button class="btn btn-secondary btn-sm" onclick="closeKeyGenModal()">✕</button>
+      </div>
+
+      <form onsubmit="handleBatchGenerate(event)">
+        <div class="form-group">
+          <label>Tier</label>
+          <select id="modalGenTier" class="form-select">
+            <option value="Standard">Standard</option>
+            <option value="VIP">VIP</option>
+            <option value="Lifetime">Lifetime</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Duration</label>
+          <select id="modalGenDuration" class="form-select">
+            <option value="30">30 Days</option>
+            <option value="7">7 Days</option>
+            <option value="90">90 Days</option>
+            <option value="365">365 Days</option>
+            <option value="lifetime">Lifetime</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Tag (e.g. Developer)</label>
+          <input type="text" id="modalGenTag" class="form-input" placeholder="Developer, VIP, Staff">
+        </div>
+        <div class="form-group">
+          <label>Count (1-50)</label>
+          <input type="number" id="modalGenCount" class="form-input" min="1" max="50" value="1" required>
+        </div>
+        <div class="form-group">
+          <label>Admin Note (Optional)</label>
+          <input type="text" id="modalGenNote" class="form-input" placeholder="e.g. Personal key">
+        </div>
+
+        <button type="submit" class="btn btn-primary" style="width:100%; justify-content:center;" id="btnModalGenSubmit">
+          Generate & Insert into DB
+        </button>
+      </form>
+
+      <div id="modalGenOutputWrap" style="display:none; margin-top:18px;">
+        <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
+          <span style="font-size:12px; font-weight:600; color:var(--muted);">Generated Keys:</span>
+          <button class="btn btn-secondary btn-sm" onclick="copyGenKeys()">📋 Copy</button>
+        </div>
+        <textarea id="modalGenOutput" class="form-input mono" style="height:110px; font-size:12px; resize:none;" readonly></textarea>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Embedded Supabase configuration
+    const EMBEDDED_URL = "https://lsxwxpbzucqpgqxfhmmh.supabase.co";
+    const EMBEDDED_ANON = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxzeHd4cGJ6dWNxcGdxeGZobW1oIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE4NDAzOTQsImV4cCI6MjEwNzQxNjM5NH0.u76f7JH9P9OKQpJdBhEjut4FPMf561L62m5iCLAAN-g";
+    const PASSWORD_SALT = "SPEGTILITY_SECURE_AUTH_SALT_V1";
+
+    // Internal protected key resolver for developer admin actions
+    function _resolveAdminKey() {
+      const _p = "PyMQMjgdOTMVMxATDyATaxQzEykTNAhvORkTbBMxKgIMGRBjdD8jECo5aRczFTMQID4CGDIDNxwgAAkTKRM0EDYAMxNsEzciID8SPm45HRBsPg0UIjkdPiI/HQA1OA1rNRMzLTM5N2MpAAkTbBM0FDY5NAAqA2gMPDk3YykACRMpEzc2Mj4ZE2wXDjlvFw49ahceF28UGS0zAAIyLRMwNSMXDhtpFB4faBcgMWo8C3QUCy5pKTkeCWkiEy4LEhc8PjFvFT4eHAw/MBYWYxJqFjIKKzUXAgI/IBc5";
+      try {
+        const bin = atob(_p);
+        const res = [];
+        for (let i = 0; i < bin.length; i++) {
+          res.push(String.fromCharCode(bin.charCodeAt(i) ^ 0x5A));
+        }
+        return res.join('');
+      } catch (e) {
+        return "";
+      }
+    }
+
+    const LS_USER = "spegtility_web_user";
+    const LS_KEY = "spegtility_web_key";
+
+    let currentUser = null;
+    let currentKey = null;
+
+    let adminKeysList = [];
+    let adminUsersList = [];
+
+    async function sha256(str) {
+      const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(str));
+      return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, "0")).join("");
+    }
+
+    // Call Supabase RPC
+    async function callRpc(fnName, payload = {}) {
+      const url = EMBEDDED_URL;
+      const key = EMBEDDED_ANON;
+      const res = await fetch(`${url}/rest/v1/rpc/${fnName}`, {
+        method: "POST",
+        headers: {
+          "apikey": key,
+          "Authorization": `Bearer ${key}`,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(payload)
+      });
+      if (!res.ok) {
+        const txt = await res.text();
+        throw new Error(`RPC ${fnName} error: ${txt}`);
+      }
+      return res.json();
+    }
+
+    // Admin direct REST query using service role key
+    async function adminRest(endpoint, options = {}) {
+      const isDev = currentUser && (currentUser.tag === 'Developer' || (currentKey && currentKey.tag === 'Developer'));
+      if (!isDev) {
+        throw new Error("Access Denied: Developer privilege required.");
+      }
+
+      const url = EMBEDDED_URL;
+      const key = _resolveAdminKey();
+
+      const res = await fetch(`${url}/rest/v1/${endpoint}`, {
+        ...options,
+        headers: {
+          "apikey": key,
+          "Authorization": `Bearer ${key}`,
+          "Content-Type": "application/json",
+          "Prefer": "return=representation",
+          ...(options.headers || {})
+        }
+      });
+      if (!res.ok) {
+        const txt = await res.text();
+        throw new Error(`API Error: ${txt}`);
+      }
+      return res.json();
+    }
+
+    // Navigation and Routing
+    function showSection(sectionId) {
+      document.querySelectorAll('.view-section').forEach(sec => sec.classList.remove('active'));
+      document.querySelectorAll('.nav-item').forEach(btn => btn.classList.remove('active'));
+
+      const targetSec = document.getElementById(`view-${sectionId}`);
+      if (targetSec) targetSec.classList.add('active');
+
+      const navBtn = document.getElementById(`nav-btn-${sectionId}`);
+      if (navBtn) navBtn.classList.add('active');
+
+      window.scrollTo({ top: 0, behavior: "smooth" });
+
+      if (sectionId === "admin") {
+        refreshAdminData();
+      }
+    }
+
+    function scrollToFeatures() {
+      showSection('home');
+      const el = document.getElementById('featuresSection');
+      if (el) el.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    // Auth Tabs
+    function setAuthTab(tab) {
+      const loginBtn = document.getElementById('tabBtnLogin');
+      const regBtn = document.getElementById('tabBtnRegister');
+      const loginPanel = document.getElementById('authPanelLogin');
+      const regPanel = document.getElementById('authPanelRegister');
+
+      if (tab === 'login') {
+        loginBtn.classList.add('active');
+        regBtn.classList.remove('active');
+        loginPanel.style.display = 'block';
+        regPanel.style.display = 'none';
+      } else {
+        loginBtn.classList.remove('active');
+        regBtn.classList.add('active');
+        loginPanel.style.display = 'none';
+        regPanel.style.display = 'block';
+      }
+    }
+
+    // Handle Login
+    async function handleLogin(e) {
+      e.preventDefault();
+      const email = document.getElementById('loginEmail').value.trim();
+      const pass = document.getElementById('loginPassword').value;
+      const btn = document.getElementById('loginSubmitBtn');
+
+      btn.disabled = true;
+      btn.innerText = "Signing in...";
+
+      try {
+        const pwHash = await sha256(`${PASSWORD_SALT}:${pass}`);
+        const res = await callRpc("speg_login", {
+          p_email: email,
+          p_password_hash: pwHash,
+          p_hwid: "WEB-CLIENT"
+        });
+
+        if (!res.success) {
+          alert(`Login failed: ${res.error || 'Invalid credentials'}`);
+          return;
+        }
+
+        currentUser = res.user;
+        currentKey = res.key;
+        localStorage.setItem(LS_USER, JSON.stringify(currentUser));
+        localStorage.setItem(LS_KEY, JSON.stringify(currentKey));
+
+        updateAuthState();
+        alert(`Welcome back, ${currentUser.username}!`);
+      } catch (err) {
+        alert(`Error: ${err.message}`);
+      } finally {
+        btn.disabled = false;
+        btn.innerText = "Sign In";
+      }
+    }
+
+    // Handle Register
+    async function handleRegister(e) {
+      e.preventDefault();
+      const username = document.getElementById('regUsername').value.trim();
+      const email = document.getElementById('regEmail').value.trim();
+      const pass = document.getElementById('regPassword').value;
+      const btn = document.getElementById('regSubmitBtn');
+
+      btn.disabled = true;
+      btn.innerText = "Registering...";
+
+      try {
+        const pwHash = await sha256(`${PASSWORD_SALT}:${pass}`);
+        const res = await callRpc("speg_register", {
+          p_email: email,
+          p_password_hash: pwHash,
+          p_hwid: "WEB-CLIENT",
+          p_username: username
+        });
+
+        if (!res.success) {
+          alert(`Registration failed: ${res.error || 'Please check input'}`);
+          return;
+        }
+
+        alert("Account created successfully! Please sign in.");
+        setAuthTab('login');
+        document.getElementById('loginEmail').value = email;
+      } catch (err) {
+        alert(`Error: ${err.message}`);
+      } finally {
+        btn.disabled = false;
+        btn.innerText = "Register Account";
+      }
+    }
+
+    // Handle Key Redeem
+    async function handleRedeem(e) {
+      e.preventDefault();
+      if (!currentUser) return alert("Please sign in first.");
+
+      const code = document.getElementById('redeemKeyInput').value.trim().toUpperCase();
+      const btn = document.getElementById('redeemSubmitBtn');
+      btn.disabled = true;
+      btn.innerText = "Activating...";
+
+      try {
+        const res = await callRpc("speg_redeem_key", {
+          p_user_id: currentUser.id,
+          p_key_code: code,
+          p_hwid: currentUser.hwid || "WEB-CLIENT"
+        });
+
+        if (!res.success) {
+          alert(`Redemption failed: ${res.error || 'Invalid key'}`);
+          return;
+        }
+
+        currentKey = res.key;
+        if (currentKey && currentKey.tag) {
+          currentUser.tag = currentKey.tag;
+        }
+        localStorage.setItem(LS_USER, JSON.stringify(currentUser));
+        localStorage.setItem(LS_KEY, JSON.stringify(currentKey));
+
+        updateAuthState();
+        alert(res.message || "License key activated successfully!");
+      } catch (err) {
+        alert(`Error: ${err.message}`);
+      } finally {
+        btn.disabled = false;
+        btn.innerText = "Redeem Key";
+        document.getElementById('redeemKeyInput').value = "";
+      }
+    }
+
+    // Logout
+    function handleLogout() {
+      currentUser = null;
+      currentKey = null;
+      localStorage.removeItem(LS_USER);
+      localStorage.removeItem(LS_KEY);
+      updateAuthState();
+      showSection('home');
+    }
+
+    // Update UI based on Current User and Key
+    function updateAuthState() {
+      const topAvatar = document.getElementById('topAvatar');
+      const topUsername = document.getElementById('topUsername');
+      const adminNavBtn = document.getElementById('nav-btn-admin');
+
+      const authTabs = document.getElementById('authTabsContainer');
+      const panelLogin = document.getElementById('authPanelLogin');
+      const panelRegister = document.getElementById('authPanelRegister');
+      const panelProfile = document.getElementById('authPanelProfile');
+
+      if (currentUser) {
+        topUsername.innerText = `@${currentUser.username}`;
+        if (currentUser.avatar_data && currentUser.avatar_data.startsWith('data:image')) {
+          topAvatar.innerHTML = `<img src="${currentUser.avatar_data}" alt="avatar">`;
+        } else {
+          topAvatar.innerText = currentUser.username.charAt(0).toUpperCase();
+        }
+
+        // Developer Tag Check
+        const isDeveloper = (currentUser.tag === 'Developer') || (currentKey && currentKey.tag === 'Developer');
+        if (isDeveloper) {
+          adminNavBtn.style.display = 'flex';
+        } else {
+          adminNavBtn.style.display = 'none';
+        }
+
+        authTabs.style.display = 'none';
+        panelLogin.style.display = 'none';
+        panelRegister.style.display = 'none';
+        panelProfile.style.display = 'block';
+
+        document.getElementById('profileUsername').innerHTML = `${currentUser.username} ${isDeveloper ? '<span class="badge badge-dev">🔨 Developer</span>' : ''}`;
+        document.getElementById('profileEmail').innerText = currentUser.email;
+
+        const profileAvatar = document.getElementById('profileBigAvatar');
+        if (currentUser.avatar_data && currentUser.avatar_data.startsWith('data:image')) {
+          profileAvatar.innerHTML = `<img src="${currentUser.avatar_data}" alt="avatar">`;
+        } else {
+          profileAvatar.innerText = currentUser.username.charAt(0).toUpperCase();
+        }
+
+        // Key Card
+        if (currentKey) {
+          document.getElementById('keyCardCode').innerText = currentKey.key_code || 'None';
+          document.getElementById('keyCardTier').innerText = currentKey.tier || 'Standard';
+          document.getElementById('keyCardStatus').innerHTML = `<span class="badge badge-${currentKey.status || 'active'}">${currentKey.status || 'active'}</span>`;
+          document.getElementById('keyCardTag').innerText = currentKey.tag || 'Standard User';
+          document.getElementById('keyCardExpires').innerText = currentKey.expires_at ? new Date(currentKey.expires_at).toLocaleDateString() : 'Never (Lifetime)';
+        } else {
+          document.getElementById('keyCardCode').innerText = 'No active key';
+          document.getElementById('keyCardTier').innerText = 'None';
+          document.getElementById('keyCardStatus').innerHTML = '<span class="badge badge-expired">Unlicensed</span>';
+          document.getElementById('keyCardTag').innerText = '—';
+          document.getElementById('keyCardExpires').innerText = '—';
+        }
+
+      } else {
+        topUsername.innerText = "Sign In";
+        topAvatar.innerText = "👤";
+        adminNavBtn.style.display = 'none';
+
+        authTabs.style.display = 'flex';
+        panelProfile.style.display = 'none';
+        setAuthTab('login');
+      }
+    }
+
+    // ========================================================================
+    // ADMIN DASHBOARD LOGIC
+    // ========================================================================
+    function setAdminTab(tab) {
+      const btnKeys = document.getElementById('admTabBtnKeys');
+      const btnUsers = document.getElementById('admTabBtnUsers');
+      const viewKeys = document.getElementById('admViewKeys');
+      const viewUsers = document.getElementById('admViewUsers');
+
+      if (tab === 'keys') {
+        btnKeys.classList.add('active');
+        btnUsers.classList.remove('active');
+        viewKeys.style.display = 'block';
+        viewUsers.style.display = 'none';
+      } else {
+        btnKeys.classList.remove('active');
+        btnUsers.classList.add('active');
+        viewKeys.style.display = 'none';
+        viewUsers.style.display = 'block';
+      }
+    }
+
+    async function refreshAdminData() {
+      try {
+        adminKeysList = await adminRest("speg_keys?select=*&order=created_at.desc");
+        adminUsersList = await adminRest("speg_users?select=*&order=created_at.desc");
+
+        document.getElementById('metricTotalUsers').innerText = adminUsersList.length;
+        document.getElementById('metricTotalKeys').innerText = adminKeysList.length;
+        document.getElementById('metricActiveKeys').innerText = adminKeysList.filter(k => k.status === 'active').length;
+        document.getElementById('metricUnclaimedKeys').innerText = adminKeysList.filter(k => k.status === 'unclaimed').length;
+
+        renderAdminKeys();
+        renderAdminUsers();
+      } catch (err) {
+        console.warn("Admin fetch error:", err.message);
+      }
+    }
+
+    function renderAdminKeys() {
+      const tbody = document.getElementById('adminKeysTbody');
+      const query = (document.getElementById('adminKeySearch').value || '').trim().toLowerCase();
+      const statusFilter = document.getElementById('adminKeyFilter').value;
+
+      let filtered = adminKeysList.filter(k => {
+        if (statusFilter !== 'all' && k.status !== statusFilter) return false;
+        if (query) {
+          const matchCode = (k.key_code || '').toLowerCase().includes(query);
+          const matchTag = (k.tag || '').toLowerCase().includes(query);
+          const matchNotes = (k.notes || '').toLowerCase().includes(query);
+          return matchCode || matchTag || matchNotes;
+        }
+        return true;
+      });
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; color:var(--muted); padding:28px;">No matching keys found</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = filtered.map(k => `
+        <tr>
+          <td class="mono" style="font-weight:700; color:#fff;">${k.key_code}</td>
+          <td>${k.tier}</td>
+          <td>${k.tag ? `<span class="badge badge-dev">🔨 ${k.tag}</span>` : '<span style="color:var(--muted);">—</span>'}</td>
+          <td><span class="badge badge-${k.status}">${k.status}</span></td>
+          <td class="mono" style="font-size:11px;">${k.hwid || '—'}</td>
+          <td>${k.expires_at ? new Date(k.expires_at).toLocaleDateString() : 'Lifetime'}</td>
+          <td style="color:var(--muted); font-size:12px;">${k.notes || '—'}</td>
+          <td>
+            <div style="display:flex; gap:6px;">
+              ${k.hwid ? `<button class="btn btn-secondary btn-sm" onclick="adminResetHwid('${k.id}')">🔄 Reset HWID</button>` : ''}
+              ${k.status !== 'banned' ? `<button class="btn btn-danger btn-sm" onclick="adminToggleBanKey('${k.id}', true)">Ban</button>` : `<button class="btn btn-secondary btn-sm" onclick="adminToggleBanKey('${k.id}', false)">Unban</button>`}
+            </div>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function renderAdminUsers() {
+      const tbody = document.getElementById('adminUsersTbody');
+      const query = (document.getElementById('adminUserSearch').value || '').trim().toLowerCase();
+
+      let filtered = adminUsersList.filter(u => {
+        if (!query) return true;
+        const matchEmail = (u.email || '').toLowerCase().includes(query);
+        const matchUname = (u.username || '').toLowerCase().includes(query);
+        const matchKey = (u.active_key_code || '').toLowerCase().includes(query);
+        return matchEmail || matchUname || matchKey;
+      });
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color:var(--muted); padding:28px;">No matching users found</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = filtered.map(u => {
+        const isDev = u.tag === 'Developer';
+        return `
+          <tr>
+            <td>
+              <div style="display:flex; align-items:center; gap:8px;">
+                <div style="font-weight:700; color:#fff;">${isDev ? '🔨 ' : ''}@${u.username || 'user'}</div>
+              </div>
+              <div style="font-size:11px; color:var(--muted);">${u.email}</div>
+            </td>
+            <td class="mono">${u.active_key_code ? `<span class="badge badge-active">${u.active_key_code}</span>` : '<span style="color:var(--muted);">None</span>'}</td>
+            <td class="mono" style="font-size:11px;">${u.id.substring(0, 8)}...</td>
+            <td class="mono" style="font-size:11px;">${u.hwid ? u.hwid.substring(0, 16) + '...' : '—'}</td>
+            <td><span class="badge ${u.is_banned ? 'badge-banned' : 'badge-active'}">${u.is_banned ? 'Banned' : 'Active'}</span></td>
+            <td>${new Date(u.created_at).toLocaleDateString()}</td>
+            <td>
+              <button class="btn btn-sm ${u.is_banned ? 'btn-secondary' : 'btn-danger'}" onclick="adminToggleBanUser('${u.id}', ${!u.is_banned})">
+                ${u.is_banned ? 'Unban' : 'Ban User'}
+              </button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    async function adminResetHwid(keyId) {
+      if (!confirm("Reset bound HWID for this key? The user will be able to bind a new PC.")) return;
+      try {
+        await adminRest(`speg_keys?id=eq.${keyId}`, {
+          method: "PATCH",
+          body: JSON.stringify({ hwid: null })
+        });
+        alert("HWID reset successfully.");
+        refreshAdminData();
+      } catch (err) {
+        alert(`Error: ${err.message}`);
+      }
+    }
+
+    async function adminToggleBanKey(keyId, ban) {
+      try {
+        await adminRest(`speg_keys?id=eq.${keyId}`, {
+          method: "PATCH",
+          body: JSON.stringify({ status: ban ? 'banned' : 'active' })
+        });
+        refreshAdminData();
+      } catch (err) {
+        alert(`Error: ${err.message}`);
+      }
+    }
+
+    async function adminToggleBanUser(userId, ban) {
+      try {
+        await adminRest(`speg_users?id=eq.${userId}`, {
+          method: "PATCH",
+          body: JSON.stringify({ is_banned: ban })
+        });
+        refreshAdminData();
+      } catch (err) {
+        alert(`Error: ${err.message}`);
+      }
+    }
+
+    function openKeyGenModal() {
+      document.getElementById('modalKeyGen').classList.add('open');
+    }
+    function closeKeyGenModal() {
+      document.getElementById('modalKeyGen').classList.remove('open');
+    }
+
+    async function handleBatchGenerate(e) {
+      e.preventDefault();
+      const tier = document.getElementById('modalGenTier').value;
+      const dur = document.getElementById('modalGenDuration').value;
+      const durationDays = dur === 'lifetime' ? null : parseInt(dur, 10);
+      const tag = document.getElementById('modalGenTag').value.trim();
+      const count = parseInt(document.getElementById('modalGenCount').value, 10);
+      const notes = document.getElementById('modalGenNote').value.trim();
+      const btn = document.getElementById('btnModalGenSubmit');
+
+      btn.disabled = true;
+      btn.innerText = "Generating...";
+
+      try {
+        const rows = [];
+        const codes = [];
+        for (let i = 0; i < count; i++) {
+          const randHex = () => Math.random().toString(36).substring(2, 6).toUpperCase();
+          const code = `SPEG-${randHex()}-${randHex()}-${randHex()}-${randHex()}`;
+          rows.push({
+            key_code: code,
+            tier: tier,
+            duration_days: durationDays,
+            status: "unclaimed",
+            notes: notes,
+            tag: tag
+          });
+          codes.push(code);
+        }
+
+        await adminRest("speg_keys", {
+          method: "POST",
+          body: JSON.stringify(rows)
+        });
+
+        document.getElementById('modalGenOutputWrap').style.display = 'block';
+        document.getElementById('modalGenOutput').value = codes.join('\n');
+        alert(`Successfully generated ${count} key(s)!`);
+        refreshAdminData();
+      } catch (err) {
+        alert(`Generation error: ${err.message}`);
+      } finally {
+        btn.disabled = false;
+        btn.innerText = "Generate & Insert into DB";
+      }
+    }
+
+    function copyGenKeys() {
+      const area = document.getElementById('modalGenOutput');
+      navigator.clipboard.writeText(area.value);
+      alert("Keys copied to clipboard!");
+    }
+
+    // ========================================================================
+    // Interactive Starfield Algorithm (Port of Spegtility's StarfieldVisualizer)
+    // - Drifting & twinkling stars
+    // - 3 closest stars within reach connect to cursor with dynamic lines
+    // - Handover fade-in and fade-out as mouse moves
+    // ========================================================================
+    (function initConstellation() {
+      const canvas = document.getElementById('starfieldCanvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+
+      const LINKS = 3;
+      const REACH = 260.0;
+      const DENSITY = 1 / 6500.0;
+      const MAX_STARS = 180;
+
+      let stars = [];
+      let width = window.innerWidth;
+      let height = window.innerHeight;
+
+      let mouse = { x: -1000, y: -1000, inside: false };
+
+      function resize() {
+        width = window.innerWidth;
+        height = window.innerHeight;
+        canvas.width = width;
+        canvas.height = height;
+
+        const target = Math.min(MAX_STARS, Math.floor(width * height * DENSITY));
+        while (stars.length < target) {
+          const speed = Math.random() * 10 + 4;
+          const ang = Math.random() * Math.PI * 2;
+          stars.push({
+            x: Math.random() * width,
+            y: Math.random() * height,
+            vx: Math.cos(ang) * speed,
+            vy: Math.sin(ang) * speed,
+            radius: [0.9, 1.1, 1.3, 1.6, 2.0][Math.floor(Math.random() * 5)],
+            phase: Math.random() * Math.PI * 2,
+            twinkleSpeed: Math.random() * 1.2 + 0.6,
+            link: 0.0
+          });
+        }
+        while (stars.length > target) {
+          stars.pop();
+        }
+      }
+
+      window.addEventListener('resize', resize);
+      window.addEventListener('mousemove', (e) => {
+        mouse.x = e.clientX;
+        mouse.y = e.clientY;
+        mouse.inside = true;
+      });
+      window.addEventListener('mouseleave', () => {
+        mouse.inside = false;
+      });
+
+      resize();
+
+      let lastTime = performance.now();
+      let t = 0;
+
+      function render(now) {
+        const dt = Math.min((now - lastTime) / 1000.0, 0.1);
+        lastTime = now;
+        t += dt;
+
+        ctx.clearRect(0, 0, width, height);
+
+        // Find LINKS nearest stars within reach of cursor
+        const targets = new Set();
+        if (mouse.inside) {
+          const reach2 = REACH * REACH;
+          const candidates = [];
+          for (let i = 0; i < stars.length; i++) {
+            const s = stars[i];
+            const d2 = (s.x - mouse.x) ** 2 + (s.y - mouse.y) ** 2;
+            if (d2 < reach2) {
+              candidates.push({ dist2: d2, index: i });
+            }
+          }
+          candidates.sort((a, b) => a.dist2 - b.dist2);
+          for (let i = 0; i < Math.min(LINKS, candidates.length); i++) {
+            targets.add(candidates[i].index);
+          }
+        }
+
+        const fade = Math.min(1.0, dt * 9.0);
+        const margin = 6.0;
+
+        for (let i = 0; i < stars.length; i++) {
+          const s = stars[i];
+
+          // Drift + wrap around edges
+          s.x += s.vx * dt;
+          s.y += s.vy * dt;
+          if (s.x < -margin) s.x += width + 2 * margin;
+          else if (s.x > width + margin) s.x -= width + 2 * margin;
+          if (s.y < -margin) s.y += height + 2 * margin;
+          else if (s.y > height + margin) s.y -= height + 2 * margin;
+
+          // Ease link strength towards 1 for targets, 0 for rest
+          const goal = targets.has(i) ? 1.0 : 0.0;
+          s.link += (goal - s.link) * fade;
+          if (s.link < 0.02 && goal === 0.0) s.link = 0.0;
+
+          // Draw connection line
+          if (s.link > 0.0 && mouse.inside) {
+            const dist = Math.hypot(s.x - mouse.x, s.y - mouse.y);
+            const closeness = Math.max(0.0, 1.0 - dist / REACH) ** 0.5;
+            const strength = s.link * (0.35 + 0.65 * closeness);
+
+            ctx.beginPath();
+            ctx.moveTo(s.x, s.y);
+            ctx.lineTo(mouse.x, mouse.y);
+            ctx.strokeStyle = `rgba(139, 92, 246, ${strength * 0.75})`;
+            ctx.lineWidth = 1.4;
+            ctx.stroke();
+          }
+
+          // Twinkle calculation
+          const twinkle = 0.55 + 0.45 * Math.sin(t * s.twinkleSpeed + s.phase);
+          const r = s.radius * (1.0 + 0.9 * s.link);
+
+          ctx.beginPath();
+          ctx.arc(s.x, s.y, r, 0, Math.PI * 2);
+
+          if (s.link > 0.0) {
+            // Glow towards purple accent when linked
+            ctx.fillStyle = `rgba(196, 181, 253, ${Math.min(1.0, 0.4 + s.link * 0.6)})`;
+          } else {
+            ctx.fillStyle = `rgba(255, 255, 255, ${twinkle * 0.7})`;
+          }
+          ctx.fill();
+        }
+
+        requestAnimationFrame(render);
+      }
+
+      requestAnimationFrame(render);
+    })();
+
+    // Initialize startup auth state
+    (function init() {
+      try {
+        const savedUserStr = localStorage.getItem(LS_USER);
+        const savedKeyStr = localStorage.getItem(LS_KEY);
+        if (savedUserStr) currentUser = JSON.parse(savedUserStr);
+        if (savedKeyStr) currentKey = JSON.parse(savedKeyStr);
+      } catch (e) {}
+
+      updateAuthState();
+    })();
+  </script>
+</body>
+</html>
