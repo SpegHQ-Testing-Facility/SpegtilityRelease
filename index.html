@@ -996,7 +996,7 @@
                 <span>Key Code</span>
                 <div style="display:flex; align-items:center; gap:8px;">
                   <span id="keyCardCode" style="color:var(--accent); font-family:var(--mono); font-weight:600;">None</span>
-                  <button type="button" class="btn btn-secondary btn-sm" id="btnRefreshKeyCode" style="padding:2px 8px; font-size:11px; display:none;" onclick="handleRefreshKeyCode()" title="Generate new key code">↻ Refresh</button>
+                  <button type="button" class="btn btn-secondary btn-sm" id="btnRefreshKeyCode" style="padding:2px 10px; font-size:11px; display:none;" onclick="handleRefreshKeyCode()" title="Generate new keycode">Generate new</button>
                 </div>
               </div>
               <div class="key-info-row">
@@ -1432,21 +1432,21 @@
       }
     }
 
-    // Refresh Key Code (Regenerates code, keeps same license record)
+    // Generate New Key Code (Regenerates code, keeps same license record)
     async function handleRefreshKeyCode() {
       if (!currentUser || !currentKey || !currentKey.key_code) {
-        alert("No active license key found to refresh.");
+        alert("No active license key found to generate a new keycode.");
         return;
       }
 
-      if (!confirm("Are you sure you want to generate a new key code for your active license?\n\nYour key's tier, expiration, and database record will remain unchanged.")) {
+      if (!confirm("Are you sure you want to generate a new keycode?\n\nA brand new keycode will be generated for your active license. Your subscription time, tier, and database record will remain unchanged.")) {
         return;
       }
 
       const btn = document.getElementById('btnRefreshKeyCode');
       if (btn) {
         btn.disabled = true;
-        btn.innerText = "Refreshing...";
+        btn.innerText = "Generating...";
       }
 
       try {
@@ -1455,7 +1455,7 @@
         });
 
         if (!res.success) {
-          alert(`Failed to refresh key code: ${res.error || 'Unknown error'}`);
+          alert(`Failed to generate new keycode: ${res.error || 'Unknown error'}`);
           return;
         }
 
@@ -1469,13 +1469,13 @@
         localStorage.setItem(LS_KEY, JSON.stringify(currentKey));
 
         updateAuthState();
-        alert(`Keycode refreshed successfully!\n\nNew key code: ${newCode}`);
+        alert(`New keycode generated successfully!\n\nYour new keycode is: ${newCode}`);
       } catch (err) {
         alert(`Error: ${err.message}`);
       } finally {
         if (btn) {
           btn.disabled = false;
-          btn.innerText = "↻ Refresh";
+          btn.innerText = "Generate new";
         }
       }
     }
