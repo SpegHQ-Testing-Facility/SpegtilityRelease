@@ -471,7 +471,7 @@
        ACCOUNT PAGE
        ========================================================================== */
     .account-container {
-      max-width: 760px;
+      max-width: 980px;
       margin: 40px auto 80px;
       padding: 0 20px;
     }
@@ -634,6 +634,400 @@
     }
 
     /* ==========================================================================
+       Social Hub, Friends & Direct Messages (DMs)
+       ========================================================================== */
+    .tab-badge {
+      background: var(--danger);
+      color: #ffffff;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: var(--radius-pill);
+      margin-left: 6px;
+      line-height: 1;
+      display: inline-block;
+    }
+
+    .social-hdr {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+    .social-hdr-title {
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: -0.3px;
+      color: #ffffff;
+    }
+    .social-hdr-sub {
+      color: var(--muted);
+      font-size: 13px;
+      margin-top: 2px;
+    }
+
+    .add-friend-bar {
+      background: #06070a;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 12px 14px;
+      margin-bottom: 20px;
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .add-friend-bar input {
+      flex: 1;
+      min-width: 220px;
+    }
+
+    .reqs-box {
+      background: rgba(139, 92, 246, 0.07);
+      border: 1px solid rgba(139, 92, 246, 0.35);
+      border-radius: var(--radius-md);
+      padding: 14px 18px;
+      margin-bottom: 20px;
+    }
+    .reqs-box-hdr {
+      font-size: 13.5px;
+      font-weight: 700;
+      color: #c4b5fd;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .req-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .req-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 12px;
+      background: #0c0d12;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .req-user-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .req-actions {
+      display: flex;
+      gap: 6px;
+    }
+
+    .social-layout {
+      display: grid;
+      grid-template-columns: 360px 1fr;
+      gap: 18px;
+      min-height: 520px;
+    }
+    @media (max-width: 860px) {
+      .social-layout {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .friends-list-panel {
+      background: #06070a;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .friends-list-hdr {
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(255, 255, 255, 0.02);
+      font-size: 13px;
+      font-weight: 600;
+    }
+    .friends-list-search {
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .friends-scroll {
+      flex: 1;
+      max-height: 440px;
+      overflow-y: auto;
+      padding: 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .friend-card {
+      background: var(--card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-sm);
+      padding: 10px 12px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .friend-card:hover {
+      background: var(--card-hover);
+      border-color: var(--border);
+    }
+    .friend-card.active {
+      border-color: var(--accent);
+      background: var(--accent-soft);
+    }
+    .friend-row-main {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .friend-avatar-wrap {
+      position: relative;
+      width: 36px;
+      height: 36px;
+      flex-shrink: 0;
+    }
+    .friend-avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: var(--input);
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 14px;
+      overflow: hidden;
+      color: #fff;
+    }
+    .friend-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .status-dot {
+      position: absolute;
+      bottom: -1px;
+      right: -1px;
+      width: 11px;
+      height: 11px;
+      border-radius: 50%;
+      border: 2px solid #000;
+    }
+    .status-dot.online {
+      background: var(--success);
+      box-shadow: 0 0 6px rgba(34, 197, 94, 0.6);
+    }
+    .status-dot.in-game {
+      background: #06b6d4;
+      box-shadow: 0 0 7px rgba(6, 182, 212, 0.8);
+      animation: statusPulse 2s infinite;
+    }
+    .status-dot.offline {
+      background: #64748b;
+    }
+    @keyframes statusPulse {
+      0% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.15); opacity: 0.8; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+    .friend-info {
+      flex: 1;
+      min-width: 0;
+    }
+    .friend-name {
+      font-size: 13.5px;
+      font-weight: 600;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .friend-status-text {
+      font-size: 11.5px;
+      color: var(--muted);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      margin-top: 2px;
+    }
+    .friend-status-text.in-game {
+      color: #67e8f9;
+      font-weight: 600;
+    }
+    .friend-status-text.online {
+      color: #86efac;
+    }
+    .friend-actions-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      justify-content: flex-end;
+    }
+    .btn-join-server {
+      background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+      color: #fff;
+      border: none;
+      font-weight: 700;
+      font-size: 11.5px;
+      padding: 5px 12px;
+      border-radius: 4px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      transition: transform 0.15s ease, filter 0.15s ease;
+      box-shadow: 0 2px 8px rgba(16, 185, 129, 0.25);
+    }
+    .btn-join-server:hover {
+      transform: translateY(-1px);
+      filter: brightness(1.12);
+    }
+
+    .badge-msg {
+      background: var(--accent);
+      color: #fff;
+      font-size: 10px;
+      font-weight: 700;
+      padding: 2px 6px;
+      border-radius: var(--radius-pill);
+    }
+
+    .chat-panel {
+      background: #06070a;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      min-height: 480px;
+    }
+    .chat-header {
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(255, 255, 255, 0.02);
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .chat-header-user {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .chat-messages {
+      flex: 1;
+      height: 380px;
+      max-height: 380px;
+      overflow-y: auto;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .chat-msg {
+      max-width: 78%;
+      display: flex;
+      flex-direction: column;
+    }
+    .chat-msg.mine {
+      align-self: flex-end;
+      align-items: flex-end;
+    }
+    .chat-msg.theirs {
+      align-self: flex-start;
+      align-items: flex-start;
+    }
+    .msg-bubble {
+      padding: 9px 13px;
+      border-radius: 12px;
+      font-size: 13px;
+      line-height: 1.45;
+      word-break: break-word;
+    }
+    .chat-msg.mine .msg-bubble {
+      background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%);
+      color: #ffffff;
+      border-bottom-right-radius: 3px;
+      box-shadow: 0 2px 8px rgba(124, 58, 237, 0.25);
+    }
+    .chat-msg.theirs .msg-bubble {
+      background: var(--card);
+      border: 1px solid var(--border);
+      color: #ffffff;
+      border-bottom-left-radius: 3px;
+    }
+    .msg-time {
+      font-size: 10.5px;
+      color: var(--muted);
+      margin-top: 3px;
+      padding: 0 4px;
+    }
+    .chat-input-bar {
+      padding: 12px 16px;
+      border-top: 1px solid var(--border);
+      background: var(--sidebar);
+      display: flex;
+      gap: 8px;
+    }
+    .chat-empty-state {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 40px 24px;
+      color: var(--muted);
+    }
+    .chat-empty-icon {
+      font-size: 44px;
+      margin-bottom: 14px;
+      opacity: 0.8;
+    }
+
+    .speg-toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: #0f111a;
+      border: 1px solid var(--accent);
+      color: #ffffff;
+      padding: 12px 18px;
+      border-radius: var(--radius-sm);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.7);
+      z-index: 99999;
+      font-size: 13.5px;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      animation: toastSlideIn 0.25s ease forwards;
+    }
+    @keyframes toastSlideIn {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ==========================================================================
        ADMIN DASHBOARD
        ========================================================================== */
     .admin-container {
@@ -778,7 +1172,7 @@
     <header class="topbar">
       <a class="brand-wrap" onclick="showSection('home')">
         <img src="assets/app_icon.png" alt="Spegtility Logo" class="brand-icon">
-        <span class="brand-title">Spegtility <span class="brand-version">v1.4.5</span></span>
+        <span class="brand-title">Spegtility <span class="brand-version">v1.4.6</span></span>
       </a>
 
       <nav class="nav-links">
@@ -806,7 +1200,7 @@
       <div class="hero">
         <div class="hero-badge">
           <span class="pulse-dot"></span>
-          <span>Spegtility 1.4.5 Available for Windows</span>
+          <span>Spegtility 1.4.6 Available for Windows</span>
         </div>
 
         <h1>
@@ -912,7 +1306,7 @@
         <div class="banner-card">
           <div class="banner-text">
             <h3>Ready to step up your Roblox gameplay?</h3>
-            <p>Download Spegtility v1.4.5 directly from our official release repository or create an account to activate your license key.</p>
+            <p>Download Spegtility v1.4.6 directly from our official release repository or create an account to activate your license key.</p>
           </div>
           <a href="https://github.com/SpegHQ-Testing-Facility/SpegtilityRelease/releases/latest" class="btn btn-primary" target="_blank">
             <span>Download for Windows</span>
@@ -925,17 +1319,29 @@
     <main id="view-account" class="view-section">
       <div class="account-container">
         
+        <!-- Logged Out Auth Tabs (Sign In / Register) -->
         <div class="account-tabs" id="authTabsContainer">
           <button class="account-tab-btn active" id="tabBtnLogin" onclick="setAuthTab('login')">Sign In</button>
           <button class="account-tab-btn" id="tabBtnRegister" onclick="setAuthTab('register')">Register New Account</button>
         </div>
 
-        <div class="account-card">
+        <!-- Logged In User Tabs: Tab 1 Friends & Social, Tab 2 Profile & License -->
+        <div class="account-tabs" id="userTabsContainer" style="display:none;">
+          <button class="account-tab-btn active" id="tabBtnSocial" onclick="setUserTab('social')">
+            <span>💬 Friends & Social</span>
+            <span class="tab-badge" id="socialTabBadge" style="display:none;">0</span>
+          </button>
+          <button class="account-tab-btn" id="tabBtnProfile" onclick="setUserTab('profile')">
+            <span>👤 Profile & License</span>
+          </button>
+        </div>
 
-          <!-- Sign In Form -->
+        <div class="account-card" id="accountMainCard">
+
+          <!-- Sign In Form (Logged Out) -->
           <div id="authPanelLogin">
             <h2 style="font-size:20px; font-weight:700; margin-bottom:6px;">Sign In to Spegtility</h2>
-            <p style="color:var(--muted); font-size:13.5px; margin-bottom:20px;">Enter your credentials to access your profile and license status.</p>
+            <p style="color:var(--muted); font-size:13.5px; margin-bottom:20px;">Enter your credentials to access your profile, social features, and license status.</p>
 
             <form onsubmit="handleLogin(event)">
               <div class="form-group">
@@ -952,7 +1358,7 @@
             </form>
           </div>
 
-          <!-- Register Form -->
+          <!-- Register Form (Logged Out) -->
           <div id="authPanelRegister" style="display:none;">
             <h2 style="font-size:20px; font-weight:700; margin-bottom:6px;">Create an Account</h2>
             <p style="color:var(--muted); font-size:13.5px; margin-bottom:20px;">Create your account to save settings and bind license keys.</p>
@@ -976,8 +1382,107 @@
             </form>
           </div>
 
-          <!-- Profile & Key Panel -->
-          <div id="authPanelProfile" style="display:none;">
+          <!-- LOGGED-IN TAB 1: FRIENDS, REQUESTS & DMS -->
+          <div id="userPanelSocial" style="display:none;">
+            
+            <div class="social-hdr">
+              <div>
+                <h2 class="social-hdr-title">💬 Friends, Requests & Messages</h2>
+                <p class="social-hdr-sub">See who is online, join friends in-game, manage requests, and chat in real-time.</p>
+              </div>
+              <div style="display:flex; gap:8px;">
+                <button class="btn btn-secondary btn-sm" onclick="loadSocialData(true)">🔄 Refresh</button>
+              </div>
+            </div>
+
+            <!-- Quick Add Friend Bar -->
+            <form class="add-friend-bar" onsubmit="handleAddFriend(event)">
+              <span style="font-size:13px; font-weight:600; color:#cbd5e1;">Add Friend:</span>
+              <input type="text" id="addFriendInput" class="form-input" placeholder="Enter friend's exact username..." required style="height:38px;">
+              <button type="submit" class="btn btn-primary btn-sm" id="btnAddFriendSubmit" style="height:38px;">+ Send Request</button>
+            </form>
+
+            <!-- Pending Incoming Friend Requests -->
+            <div id="socialReqsWrapper" style="display:none;">
+              <div class="reqs-box">
+                <div class="reqs-box-hdr">
+                  <span>📬 Pending Incoming Friend Requests</span>
+                  <span class="badge badge-dev" id="reqsCountBadge">0</span>
+                </div>
+                <div class="req-list" id="socialReqsList">
+                  <!-- Rendered dynamically -->
+                </div>
+              </div>
+            </div>
+
+            <!-- Main Social 2-Column Layout: Left Friends List, Right Direct Messages Chat -->
+            <div class="social-layout">
+              <!-- Left: Friends List -->
+              <div class="friends-list-panel">
+                <div class="friends-list-hdr">
+                  <span>Friends (<span id="friendsCountOnline">0</span> online / <span id="friendsCountTotal">0</span>)</span>
+                  <span style="font-size:11px; color:var(--muted);">Live Presence</span>
+                </div>
+                <div class="friends-list-search">
+                  <input type="text" id="friendSearchInput" class="form-input" placeholder="Search friends..." style="height:32px; font-size:12px;" oninput="renderFriendsList()">
+                </div>
+                <div class="friends-scroll" id="friendsListContainer">
+                  <div style="text-align:center; padding:30px 14px; color:var(--muted); font-size:13px;">
+                    Loading friends...
+                  </div>
+                </div>
+              </div>
+
+              <!-- Right: Direct Message Chat Window -->
+              <div class="chat-panel" id="chatPanelContainer">
+                <div id="chatEmptyState" class="chat-empty-state">
+                  <div class="chat-empty-icon">💬</div>
+                  <h3 style="font-size:16px; font-weight:700; color:#fff; margin-bottom:6px;">Direct Messaging</h3>
+                  <p style="font-size:13px; max-width:320px;">Select a friend from the left to start a conversation, see their status, or join their Roblox server.</p>
+                </div>
+
+                <div id="chatActiveState" style="display:none; flex-direction:column; height:100%; flex:1;">
+                  <!-- Header with Friend Info & Join Server button -->
+                  <div class="chat-header">
+                    <div class="chat-header-user">
+                      <div class="friend-avatar-wrap">
+                        <div class="friend-avatar" id="activeChatAvatar">👤</div>
+                        <div class="status-dot" id="activeChatStatusDot"></div>
+                      </div>
+                      <div>
+                        <div style="font-size:14px; font-weight:700; color:#fff; display:flex; align-items:center; gap:6px;">
+                          <span id="activeChatUsername">Username</span>
+                          <span id="activeChatTag"></span>
+                        </div>
+                        <div id="activeChatStatusText" style="font-size:11.5px; color:var(--muted);">Offline</div>
+                      </div>
+                    </div>
+
+                    <div style="display:flex; align-items:center; gap:8px;" id="activeChatActions">
+                      <!-- Rendered dynamically (Join Server button, Copy Link, Refresh) -->
+                    </div>
+                  </div>
+
+                  <!-- Chat Messages Thread -->
+                  <div class="chat-messages" id="chatMessagesThread">
+                    <!-- Rendered dynamically -->
+                  </div>
+
+                  <!-- Chat Input Bar -->
+                  <form class="chat-input-bar" onsubmit="handleSendChatMessage(event)">
+                    <input type="text" id="chatMessageInput" class="form-input" placeholder="Type a message... (Press Enter to send)" autocomplete="off" required style="height:40px;">
+                    <button type="submit" class="btn btn-primary btn-sm" id="btnSendChatMessage" style="height:40px; padding:0 18px;">
+                      Send
+                    </button>
+                  </form>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- LOGGED-IN TAB 2: PROFILE & LICENSE KEY -->
+          <div id="userPanelProfile" style="display:none;">
             <div class="profile-hero">
               <div class="profile-avatar-big" id="profileBigAvatar">👤</div>
               <div class="profile-meta">
@@ -1222,6 +1727,14 @@
     let adminKeysList = [];
     let adminUsersList = [];
 
+    // Social Network, Friends & Messaging state
+    let currentSocialTab = 'social';
+    let friendsList = [];
+    let friendRequestsList = [];
+    let activeChatFriend = null;
+    let chatMessagesList = [];
+    let socialPollingTimer = null;
+
     async function sha256(str) {
       const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(str));
       return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, "0")).join("");
@@ -1290,6 +1803,9 @@
       if (sectionId === "admin") {
         refreshAdminData();
       }
+      if (sectionId === "account" && currentUser) {
+        loadSocialData();
+      }
     }
 
     function scrollToFeatures() {
@@ -1298,7 +1814,7 @@
       if (el) el.scrollIntoView({ behavior: 'smooth' });
     }
 
-    // Auth Tabs
+    // Auth Tabs (Logged Out)
     function setAuthTab(tab) {
       const loginBtn = document.getElementById('tabBtnLogin');
       const regBtn = document.getElementById('tabBtnRegister');
@@ -1315,6 +1831,28 @@
         regBtn.classList.add('active');
         loginPanel.style.display = 'none';
         regPanel.style.display = 'block';
+      }
+    }
+
+    // User Tabs (Logged In: Tab 1 Friends/Requests/DMs, Tab 2 Profile/License)
+    function setUserTab(tab) {
+      currentSocialTab = tab;
+      const btnSocial = document.getElementById('tabBtnSocial');
+      const btnProfile = document.getElementById('tabBtnProfile');
+      const panelSocial = document.getElementById('userPanelSocial');
+      const panelProfile = document.getElementById('userPanelProfile');
+
+      if (tab === 'social') {
+        if (btnSocial) btnSocial.classList.add('active');
+        if (btnProfile) btnProfile.classList.remove('active');
+        if (panelSocial) panelSocial.style.display = 'block';
+        if (panelProfile) panelProfile.style.display = 'none';
+        loadSocialData();
+      } else {
+        if (btnSocial) btnSocial.classList.remove('active');
+        if (btnProfile) btnProfile.classList.add('active');
+        if (panelSocial) panelSocial.style.display = 'none';
+        if (panelProfile) panelProfile.style.display = 'block';
       }
     }
 
@@ -1484,6 +2022,11 @@
     function handleLogout() {
       currentUser = null;
       currentKey = null;
+      activeChatFriend = null;
+      friendsList = [];
+      friendRequestsList = [];
+      chatMessagesList = [];
+      if (socialPollingTimer) clearInterval(socialPollingTimer);
       localStorage.removeItem(LS_USER);
       localStorage.removeItem(LS_KEY);
       updateAuthState();
@@ -1497,9 +2040,11 @@
       const adminNavBtn = document.getElementById('nav-btn-admin');
 
       const authTabs = document.getElementById('authTabsContainer');
+      const userTabs = document.getElementById('userTabsContainer');
       const panelLogin = document.getElementById('authPanelLogin');
       const panelRegister = document.getElementById('authPanelRegister');
-      const panelProfile = document.getElementById('authPanelProfile');
+      const panelSocial = document.getElementById('userPanelSocial');
+      const panelProfile = document.getElementById('userPanelProfile');
 
       if (currentUser) {
         topUsername.innerText = `@${currentUser.username}`;
@@ -1517,10 +2062,12 @@
           adminNavBtn.style.display = 'none';
         }
 
-        authTabs.style.display = 'none';
-        panelLogin.style.display = 'none';
-        panelRegister.style.display = 'none';
-        panelProfile.style.display = 'block';
+        if (authTabs) authTabs.style.display = 'none';
+        if (userTabs) userTabs.style.display = 'flex';
+        if (panelLogin) panelLogin.style.display = 'none';
+        if (panelRegister) panelRegister.style.display = 'none';
+
+        setUserTab(currentSocialTab || 'social');
 
         document.getElementById('profileUsername').innerHTML = `${currentUser.username} ${isDeveloper ? '<span class="badge badge-dev">🔨 Developer</span>' : ''}`;
         document.getElementById('profileEmail').innerText = currentUser.email;
@@ -1550,15 +2097,544 @@
           if (refreshBtn) refreshBtn.style.display = 'none';
         }
 
+        startSocialPolling();
+
       } else {
         topUsername.innerText = "Sign In";
         topAvatar.innerText = "👤";
         adminNavBtn.style.display = 'none';
 
-        authTabs.style.display = 'flex';
-        panelProfile.style.display = 'none';
+        if (authTabs) authTabs.style.display = 'flex';
+        if (userTabs) userTabs.style.display = 'none';
+        if (panelSocial) panelSocial.style.display = 'none';
+        if (panelProfile) panelProfile.style.display = 'none';
+        if (socialPollingTimer) clearInterval(socialPollingTimer);
+
         setAuthTab('login');
       }
+    }
+
+    // ========================================================================
+    // SOCIAL HUB & MESSAGING LOGIC
+    // ========================================================================
+    async function loadSocialData(isManual = false) {
+      if (!currentUser || !currentUser.id) return;
+      try {
+        const [overviewRes, friendsRes, requestsRes] = await Promise.all([
+          callRpc("speg_get_social_overview", { p_user_id: currentUser.id }).catch(() => null),
+          callRpc("speg_get_friends", { p_user_id: currentUser.id }).catch(() => []),
+          callRpc("speg_get_friend_requests", { p_user_id: currentUser.id }).catch(() => [])
+        ]);
+
+        // Badge update
+        const badgeEl = document.getElementById('socialTabBadge');
+        if (badgeEl) {
+          if (overviewRes && overviewRes.total_badge_count > 0) {
+            badgeEl.innerText = overviewRes.total_badge_count;
+            badgeEl.style.display = 'inline-block';
+          } else {
+            badgeEl.style.display = 'none';
+          }
+        }
+
+        friendsList = Array.isArray(friendsRes) ? friendsRes : [];
+        friendRequestsList = Array.isArray(requestsRes) ? requestsRes : [];
+
+        renderFriendRequests();
+        renderFriendsList();
+
+        if (activeChatFriend) {
+          const fresh = friendsList.find(f => f.id === activeChatFriend.id);
+          if (fresh) {
+            activeChatFriend = fresh;
+            renderChatHeader(fresh);
+          }
+        }
+
+        if (isManual) {
+          showToast("Friends & social list refreshed!");
+        }
+      } catch (err) {
+        console.warn("loadSocialData error:", err);
+      }
+    }
+
+    function renderFriendRequests() {
+      const wrapper = document.getElementById('socialReqsWrapper');
+      const listEl = document.getElementById('socialReqsList');
+      const badge = document.getElementById('reqsCountBadge');
+      if (!wrapper || !listEl) return;
+
+      if (friendRequestsList.length === 0) {
+        wrapper.style.display = 'none';
+        return;
+      }
+
+      wrapper.style.display = 'block';
+      if (badge) badge.innerText = friendRequestsList.length;
+
+      listEl.innerHTML = friendRequestsList.map(req => {
+        const avatarHtml = (req.avatar_data && req.avatar_data.startsWith('data:image'))
+          ? `<img src="${req.avatar_data}" alt="avatar">`
+          : escapeHtml((req.username || '?').charAt(0).toUpperCase());
+        const tagHtml = req.tag ? `<span class="badge badge-dev" style="padding:1px 5px; font-size:10px;">🔨 ${escapeHtml(req.tag)}</span>` : '';
+        const timeAgo = formatTimeAgo(req.created_at);
+
+        return `
+          <div class="req-item">
+            <div class="req-user-info">
+              <div class="friend-avatar">${avatarHtml}</div>
+              <div>
+                <div style="font-size:13.5px; font-weight:700; color:#fff; display:flex; align-items:center; gap:6px;">
+                  <span>@${escapeHtml(req.username)}</span>
+                  ${tagHtml}
+                </div>
+                <div style="font-size:11px; color:var(--muted);">${timeAgo}</div>
+              </div>
+            </div>
+            <div class="req-actions">
+              <button class="btn btn-primary btn-sm" onclick="handleAcceptFriend('${req.sender_id}', '${escapeHtml(req.username)}')">✓ Accept</button>
+              <button class="btn btn-secondary btn-sm" onclick="handleRejectFriend('${req.sender_id}', '${escapeHtml(req.username)}')">✕ Decline</button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function renderFriendsList() {
+      const container = document.getElementById('friendsListContainer');
+      const countOnline = document.getElementById('friendsCountOnline');
+      const countTotal = document.getElementById('friendsCountTotal');
+      const search = (document.getElementById('friendSearchInput')?.value || '').trim().toLowerCase();
+      if (!container) return;
+
+      const onlineCount = friendsList.filter(f => f.is_online).length;
+      if (countOnline) countOnline.innerText = onlineCount;
+      if (countTotal) countTotal.innerText = friendsList.length;
+
+      let filtered = friendsList;
+      if (search) {
+        filtered = filtered.filter(f => 
+          (f.username || '').toLowerCase().includes(search) || 
+          (f.current_game || '').toLowerCase().includes(search) ||
+          (f.tag || '').toLowerCase().includes(search)
+        );
+      }
+
+      if (friendsList.length === 0) {
+        container.innerHTML = `
+          <div style="text-align:center; padding:36px 14px; color:var(--muted); font-size:13px;">
+            <div style="font-size:32px; margin-bottom:8px;">👥</div>
+            <div>No friends added yet.</div>
+            <div style="font-size:11.5px; margin-top:4px; color:var(--accent);">Enter a username above to send a request!</div>
+          </div>
+        `;
+        return;
+      }
+
+      if (filtered.length === 0) {
+        container.innerHTML = `
+          <div style="text-align:center; padding:28px 14px; color:var(--muted); font-size:12.5px;">
+            No friends match "${escapeHtml(search)}".
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = filtered.map(f => {
+        const isSelected = activeChatFriend && activeChatFriend.id === f.id;
+        const avatarHtml = (f.avatar_data && f.avatar_data.startsWith('data:image'))
+          ? `<img src="${f.avatar_data}" alt="avatar">`
+          : escapeHtml((f.username || '?').charAt(0).toUpperCase());
+
+        let statusDotClass = 'offline';
+        let statusTextHtml = '⚪ Offline';
+
+        if (f.is_in_game) {
+          statusDotClass = 'in-game';
+          statusTextHtml = `<span class="friend-status-text in-game">🎮 ${escapeHtml(f.current_game || 'Roblox')}</span>`;
+        } else if (f.is_online) {
+          statusDotClass = 'online';
+          statusTextHtml = `<span class="friend-status-text online">🟢 Online</span>`;
+        } else {
+          statusTextHtml = `<span class="friend-status-text offline">Offline · ${formatLastSeen(f.last_seen)}</span>`;
+        }
+
+        const tagHtml = f.tag ? `<span class="badge badge-dev" style="padding:1px 5px; font-size:9.5px;">${escapeHtml(f.tag)}</span>` : '';
+        const unreadHtml = f.unread_dms > 0 ? `<span class="badge-msg">${f.unread_dms}</span>` : '';
+
+        // Join Server Button if in-game
+        const joinServerBtnHtml = (f.is_in_game && f.current_place_id) ? `
+          <button class="btn-join-server" onclick="joinRobloxServer('${f.current_place_id}', '${f.current_job_id || ''}', '${escapeHtml(f.username)}', event)" title="Launch Roblox and join friend's server">
+            🚀 Join Server
+          </button>
+        ` : '';
+
+        return `
+          <div class="friend-card ${isSelected ? 'active' : ''}" onclick="selectChatFriend('${f.id}')">
+            <div class="friend-row-main">
+              <div class="friend-avatar-wrap">
+                <div class="friend-avatar">${avatarHtml}</div>
+                <div class="status-dot ${statusDotClass}"></div>
+              </div>
+              <div class="friend-info">
+                <div class="friend-name">
+                  <span>@${escapeHtml(f.username)}</span>
+                  ${tagHtml}
+                  ${unreadHtml}
+                </div>
+                <div>${statusTextHtml}</div>
+              </div>
+            </div>
+            <div class="friend-actions-row">
+              ${joinServerBtnHtml}
+              <button class="btn btn-secondary btn-sm" style="padding:3px 9px; font-size:11px;" onclick="selectChatFriend('${f.id}'); event.stopPropagation();">
+                💬 Chat
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function selectChatFriend(friendId) {
+      const friend = friendsList.find(f => f.id === friendId);
+      if (!friend) return;
+      activeChatFriend = friend;
+      renderFriendsList();
+
+      const emptyState = document.getElementById('chatEmptyState');
+      const activeState = document.getElementById('chatActiveState');
+      if (emptyState) emptyState.style.display = 'none';
+      if (activeState) activeState.style.display = 'flex';
+
+      renderChatHeader(friend);
+      loadChatMessages(friend.id);
+
+      setTimeout(() => {
+        const input = document.getElementById('chatMessageInput');
+        if (input) input.focus();
+      }, 100);
+    }
+
+    function renderChatHeader(friend) {
+      const avatarEl = document.getElementById('activeChatAvatar');
+      const usernameEl = document.getElementById('activeChatUsername');
+      const tagEl = document.getElementById('activeChatTag');
+      const statusDot = document.getElementById('activeChatStatusDot');
+      const statusText = document.getElementById('activeChatStatusText');
+      const actionsEl = document.getElementById('activeChatActions');
+
+      if (avatarEl) {
+        avatarEl.innerHTML = (friend.avatar_data && friend.avatar_data.startsWith('data:image'))
+          ? `<img src="${friend.avatar_data}" alt="avatar">`
+          : escapeHtml((friend.username || '?').charAt(0).toUpperCase());
+      }
+      if (usernameEl) usernameEl.innerText = `@${friend.username}`;
+      if (tagEl) {
+        tagEl.innerHTML = friend.tag ? `<span class="badge badge-dev" style="padding:1px 6px; font-size:10px;">🔨 ${escapeHtml(friend.tag)}</span>` : '';
+      }
+
+      if (statusDot) {
+        statusDot.className = 'status-dot ' + (friend.is_in_game ? 'in-game' : (friend.is_online ? 'online' : 'offline'));
+      }
+      if (statusText) {
+        if (friend.is_in_game) {
+          statusText.innerHTML = `<span style="color:#67e8f9; font-weight:600;">🎮 Playing ${escapeHtml(friend.current_game || 'Roblox')}</span>`;
+        } else if (friend.is_online) {
+          statusText.innerHTML = `<span style="color:#86efac; font-weight:500;">🟢 Online</span>`;
+        } else {
+          statusText.innerText = `Offline · ${formatLastSeen(friend.last_seen)}`;
+        }
+      }
+
+      if (actionsEl) {
+        let html = '';
+        if (friend.is_in_game && friend.current_place_id) {
+          html += `
+            <button class="btn-join-server" onclick="joinRobloxServer('${friend.current_place_id}', '${friend.current_job_id || ''}', '${escapeHtml(friend.username)}', event)">
+              🚀 Join Server
+            </button>
+            <button class="btn btn-secondary btn-sm" onclick="copyJoinLink('${friend.current_place_id}', '${friend.current_job_id || ''}', event)" title="Copy direct Roblox join URL">
+              📋 Link
+            </button>
+          `;
+        }
+        html += `<button class="btn btn-secondary btn-sm" onclick="loadChatMessages('${friend.id}')" title="Refresh messages">🔄</button>`;
+        actionsEl.innerHTML = html;
+      }
+    }
+
+    async function loadChatMessages(friendId) {
+      if (!currentUser || !currentUser.id || !friendId) return;
+      try {
+        const res = await callRpc("speg_get_messages", {
+          p_user_id: currentUser.id,
+          p_friend_id: friendId,
+          p_limit: 60
+        });
+
+        chatMessagesList = Array.isArray(res) ? res : [];
+        renderChatMessages();
+
+        if (activeChatFriend) {
+          activeChatFriend.unread_dms = 0;
+          const f = friendsList.find(x => x.id === activeChatFriend.id);
+          if (f) f.unread_dms = 0;
+          renderFriendsList();
+        }
+      } catch (err) {
+        console.warn("loadChatMessages error:", err);
+      }
+    }
+
+    function renderChatMessages() {
+      const container = document.getElementById('chatMessagesThread');
+      if (!container) return;
+
+      if (chatMessagesList.length === 0) {
+        container.innerHTML = `
+          <div style="margin:auto; text-align:center; color:var(--muted); font-size:13px; padding:20px;">
+            No messages yet.<br>Send a message to start chatting with @${escapeHtml(activeChatFriend?.username || 'friend')}!
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = chatMessagesList.map(msg => {
+        const isMine = msg.sender_id === currentUser.id;
+        const timeStr = formatMsgTime(msg.created_at);
+        return `
+          <div class="chat-msg ${isMine ? 'mine' : 'theirs'}">
+            <div class="msg-bubble">${escapeHtml(msg.content)}</div>
+            <div class="msg-time">${timeStr}</div>
+          </div>
+        `;
+      }).join('');
+
+      container.scrollTop = container.scrollHeight;
+    }
+
+    async function handleSendChatMessage(e) {
+      e.preventDefault();
+      if (!currentUser || !currentUser.id || !activeChatFriend) return;
+      const input = document.getElementById('chatMessageInput');
+      const btn = document.getElementById('btnSendChatMessage');
+      const content = (input.value || '').trim();
+      if (!content) return;
+
+      btn.disabled = true;
+      try {
+        const res = await callRpc("speg_send_message", {
+          p_sender_id: currentUser.id,
+          p_receiver_id: activeChatFriend.id,
+          p_content: content
+        });
+
+        if (!res.success) {
+          showToast(res.error || "Failed to send message");
+          return;
+        }
+
+        input.value = '';
+        chatMessagesList.push({
+          id: res.message_id || String(Date.now()),
+          sender_id: currentUser.id,
+          receiver_id: activeChatFriend.id,
+          content: content,
+          created_at: new Date().toISOString()
+        });
+        renderChatMessages();
+
+        loadChatMessages(activeChatFriend.id);
+      } catch (err) {
+        showToast(`Error: ${err.message}`);
+      } finally {
+        btn.disabled = false;
+        input.focus();
+      }
+    }
+
+    async function handleAddFriend(e) {
+      e.preventDefault();
+      if (!currentUser || !currentUser.id) return;
+      const input = document.getElementById('addFriendInput');
+      const btn = document.getElementById('btnAddFriendSubmit');
+      const username = (input.value || '').trim();
+      if (!username) return;
+
+      btn.disabled = true;
+      btn.innerText = "Sending...";
+      try {
+        const res = await callRpc("speg_add_friend", {
+          p_user_id: currentUser.id,
+          p_friend_username: username
+        });
+
+        if (!res.success) {
+          alert(`Could not send request: ${res.error || 'Unknown error'}`);
+          return;
+        }
+
+        showToast(`Friend request sent to @${username}!`);
+        input.value = '';
+        loadSocialData();
+      } catch (err) {
+        alert(`Error: ${err.message}`);
+      } finally {
+        btn.disabled = false;
+        btn.innerText = "+ Send Request";
+      }
+    }
+
+    async function handleAcceptFriend(requesterId, username) {
+      if (!currentUser || !currentUser.id) return;
+      try {
+        const res = await callRpc("speg_accept_friend", {
+          p_user_id: currentUser.id,
+          p_requester_id: requesterId
+        });
+
+        if (!res.success) {
+          alert(res.error || "Failed to accept request");
+          return;
+        }
+
+        showToast(`Friend request from @${username} accepted!`);
+        loadSocialData();
+      } catch (err) {
+        alert(`Error: ${err.message}`);
+      }
+    }
+
+    async function handleRejectFriend(requesterId, username) {
+      if (!currentUser || !currentUser.id) return;
+      try {
+        const res = await callRpc("speg_reject_friend", {
+          p_user_id: currentUser.id,
+          p_requester_id: requesterId
+        });
+
+        if (!res.success) {
+          alert(res.error || "Failed to decline request");
+          return;
+        }
+
+        showToast(`Friend request from @${username} declined.`);
+        loadSocialData();
+      } catch (err) {
+        alert(`Error: ${err.message}`);
+      }
+    }
+
+    function joinRobloxServer(placeId, jobId, friendName, event) {
+      if (event) event.stopPropagation();
+      if (!placeId) {
+        alert("No active Roblox Place ID found for this friend.");
+        return;
+      }
+
+      let robloxUrl = `roblox://placeId=${encodeURIComponent(placeId)}`;
+      if (jobId && jobId.trim() !== '') {
+        robloxUrl += `&gameInstanceId=${encodeURIComponent(jobId.trim())}`;
+      }
+
+      window.location.href = robloxUrl;
+      showToast(`🚀 Launching Roblox to join @${friendName || 'friend'}...`);
+    }
+
+    function copyJoinLink(placeId, jobId, event) {
+      if (event) event.stopPropagation();
+      if (!placeId) return;
+
+      let link = `https://www.roblox.com/games/start?placeId=${encodeURIComponent(placeId)}`;
+      if (jobId && jobId.trim() !== '') {
+        link += `&gameInstanceId=${encodeURIComponent(jobId.trim())}`;
+      }
+
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(link).then(() => {
+          showToast("Roblox join link copied to clipboard!");
+        }).catch(() => {
+          prompt("Roblox Join Link:", link);
+        });
+      } else {
+        prompt("Roblox Join Link:", link);
+      }
+    }
+
+    function showToast(message) {
+      const existing = document.querySelector('.speg-toast');
+      if (existing) existing.remove();
+
+      const toast = document.createElement('div');
+      toast.className = 'speg-toast';
+      toast.innerHTML = `<span>💬</span><span>${escapeHtml(message)}</span>`;
+      document.body.appendChild(toast);
+
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transition = 'opacity 0.3s ease';
+        setTimeout(() => toast.remove(), 300);
+      }, 3500);
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    function formatMsgTime(isoStr) {
+      if (!isoStr) return '';
+      try {
+        const d = new Date(isoStr);
+        return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      } catch (e) {
+        return '';
+      }
+    }
+
+    function formatTimeAgo(isoStr) {
+      if (!isoStr) return '';
+      try {
+        const diff = (Date.now() - new Date(isoStr).getTime()) / 1000;
+        if (diff < 60) return 'Just now';
+        if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
+        if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
+        return `${Math.floor(diff / 86400)}d ago`;
+      } catch (e) {
+        return '';
+      }
+    }
+
+    function formatLastSeen(isoStr) {
+      if (!isoStr) return 'a while ago';
+      try {
+        const diff = (Date.now() - new Date(isoStr).getTime()) / 1000;
+        if (diff < 90) return 'Just now';
+        if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
+        if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
+        return `${Math.floor(diff / 86400)}d ago`;
+      } catch (e) {
+        return 'offline';
+      }
+    }
+
+    function startSocialPolling() {
+      if (socialPollingTimer) clearInterval(socialPollingTimer);
+      socialPollingTimer = setInterval(() => {
+        if (currentUser && document.getElementById('view-account')?.classList.contains('active')) {
+          loadSocialData();
+          if (activeChatFriend) {
+            loadChatMessages(activeChatFriend.id);
+          }
+        }
+      }, 6000);
     }
 
     // ========================================================================
