@@ -738,6 +738,39 @@
       }
     }
 
+    .social-subtabs {
+      display: flex;
+      background: rgba(255, 255, 255, 0.02);
+      border-bottom: 1px solid var(--border);
+      padding: 6px 8px;
+      gap: 6px;
+    }
+    .social-subtab-btn {
+      flex: 1;
+      padding: 7px 8px;
+      font-size: 11.5px;
+      font-weight: 600;
+      background: transparent;
+      border: 1px solid transparent;
+      color: var(--muted);
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      transition: all 0.15s ease;
+    }
+    .social-subtab-btn:hover {
+      color: #fff;
+      background: rgba(255, 255, 255, 0.06);
+    }
+    .social-subtab-btn.active {
+      background: var(--accent);
+      color: #fff;
+      border-color: var(--accent);
+    }
+
     .friends-list-panel {
       background: #06070a;
       border: 1px solid var(--border);
@@ -1417,13 +1450,24 @@
 
             <!-- Main Social 2-Column Layout: Left Friends List, Right Direct Messages Chat -->
             <div class="social-layout">
-              <!-- Left: Friends List -->
+              <!-- Left: Friends List & Social Subtabs -->
               <div class="friends-list-panel">
-                <div class="friends-list-hdr">
+                <div class="social-subtabs">
+                  <button class="social-subtab-btn active" id="subtabBtnFriends" onclick="setSocialSubtab('friends')">
+                    Friends (<span id="subtabCountFriends">0</span>)
+                  </button>
+                  <button class="social-subtab-btn" id="subtabBtnRequests" onclick="setSocialSubtab('requests')">
+                    Requests (<span id="subtabCountRequests">0</span>)
+                  </button>
+                  <button class="social-subtab-btn" id="subtabBtnPending" onclick="setSocialSubtab('pending')">
+                    Pending (<span id="subtabCountPending">0</span>)
+                  </button>
+                </div>
+                <div class="friends-list-hdr" id="friendsPresenceHdr">
                   <span>Friends (<span id="friendsCountOnline">0</span> online / <span id="friendsCountTotal">0</span>)</span>
                   <span style="font-size:11px; color:var(--muted);">Live Presence</span>
                 </div>
-                <div class="friends-list-search">
+                <div class="friends-list-search" id="friendSearchContainer">
                   <input type="text" id="friendSearchInput" class="form-input" placeholder="Search friends..." style="height:32px; font-size:12px;" oninput="renderFriendsList()">
                 </div>
                 <div class="friends-scroll" id="friendsListContainer">
@@ -1729,8 +1773,10 @@
 
     // Social Network, Friends & Messaging state
     let currentSocialTab = 'social';
+    let currentSocialSubtab = 'friends';
     let friendsList = [];
     let friendRequestsList = [];
+    let pendingRequestsList = [];
     let activeChatFriend = null;
     let chatMessagesList = [];
     let socialPollingTimer = null;
@@ -2025,6 +2071,8 @@
       activeChatFriend = null;
       friendsList = [];
       friendRequestsList = [];
+      pendingRequestsList = [];
+      currentSocialSubtab = 'friends';
       chatMessagesList = [];
       if (socialPollingTimer) clearInterval(socialPollingTimer);
       localStorage.removeItem(LS_USER);
@@ -2126,6 +2174,32 @@
           callRpc("speg_get_friend_requests", { p_user_id: currentUser.id }).catch(() => [])
         ]);
 
+        let pendingRes = await callRpc("speg_get_pending_requests", { p_user_id: currentUser.id }).catch(() => null);
+        if (!Array.isArray(pendingRes) && (!pendingRes || !Array.isArray(pendingRes.data))) {
+          try {
+            const resp = await fetch(`${EMBEDDED_URL}/rest/v1/speg_friends?user_id=eq.${currentUser.id}&status=eq.pending&select=id,friend_id,created_at,friend:speg_users!speg_friends_friend_id_fkey(id,username,avatar_data,tag)&order=created_at.desc`, {
+              headers: {
+                'apikey': EMBEDDED_ANON,
+                'Authorization': `Bearer ${EMBEDDED_ANON}`
+              }
+            });
+            if (resp.ok) {
+              const raw = await resp.json();
+              pendingRes = raw.map(item => {
+                const friendObj = item.friend || {};
+                return {
+                  id: friendObj.id || item.friend_id,
+                  username: friendObj.username || 'User',
+                  avatar_data: friendObj.avatar_data || '',
+                  tag: friendObj.tag || '',
+                  created_at: item.created_at,
+                  friend_row_id: item.id
+                };
+              });
+            }
+          } catch (e) {}
+        }
+
         // Badge update
         const badgeEl = document.getElementById('socialTabBadge');
         if (badgeEl) {
@@ -2139,9 +2213,24 @@
 
         friendsList = Array.isArray(friendsRes) ? friendsRes : [];
         friendRequestsList = Array.isArray(requestsRes) ? requestsRes : [];
+        pendingRequestsList = Array.isArray(pendingRes) ? pendingRes : (pendingRes && Array.isArray(pendingRes.data) ? pendingRes.data : []);
+
+        const bFriends = document.getElementById('subtabCountFriends');
+        const bRequests = document.getElementById('subtabCountRequests');
+        const bPending = document.getElementById('subtabCountPending');
+        if (bFriends) bFriends.innerText = friendsList.length;
+        if (bRequests) bRequests.innerText = friendRequestsList.length;
+        if (bPending) bPending.innerText = pendingRequestsList.length;
 
         renderFriendRequests();
-        renderFriendsList();
+
+        if (currentSocialSubtab === 'friends') {
+          renderFriendsList();
+        } else if (currentSocialSubtab === 'requests') {
+          renderRequestsSubtabList();
+        } else if (currentSocialSubtab === 'pending') {
+          renderPendingList();
+        }
 
         if (activeChatFriend) {
           const fresh = friendsList.find(f => f.id === activeChatFriend.id);
@@ -2157,6 +2246,127 @@
       } catch (err) {
         console.warn("loadSocialData error:", err);
       }
+    }
+
+    function setSocialSubtab(tab) {
+      currentSocialSubtab = tab;
+      const btnFriends = document.getElementById('subtabBtnFriends');
+      const btnRequests = document.getElementById('subtabBtnRequests');
+      const btnPending = document.getElementById('subtabBtnPending');
+      const searchContainer = document.getElementById('friendSearchContainer');
+      const presenceHdr = document.getElementById('friendsPresenceHdr');
+
+      if (btnFriends) btnFriends.classList.toggle('active', tab === 'friends');
+      if (btnRequests) btnRequests.classList.toggle('active', tab === 'requests');
+      if (btnPending) btnPending.classList.toggle('active', tab === 'pending');
+
+      if (searchContainer) searchContainer.style.display = (tab === 'friends') ? 'block' : 'none';
+      if (presenceHdr) presenceHdr.style.display = (tab === 'friends') ? 'flex' : 'none';
+
+      if (tab === 'friends') {
+        renderFriendsList();
+      } else if (tab === 'requests') {
+        renderRequestsSubtabList();
+      } else if (tab === 'pending') {
+        renderPendingList();
+      }
+    }
+
+    function renderRequestsSubtabList() {
+      const container = document.getElementById('friendsListContainer');
+      if (!container) return;
+
+      const badge = document.getElementById('subtabCountRequests');
+      if (badge) badge.innerText = friendRequestsList.length;
+
+      if (friendRequestsList.length === 0) {
+        container.innerHTML = `
+          <div style="text-align:center; padding:36px 14px; color:var(--muted); font-size:13px;">
+            <div style="font-size:32px; margin-bottom:8px;">📬</div>
+            <div>No incoming friend requests.</div>
+            <div style="font-size:11.5px; margin-top:4px; color:var(--muted);">When other players add you, their requests will appear here.</div>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = friendRequestsList.map(req => {
+        const avatarHtml = (req.avatar_data && req.avatar_data.startsWith('data:image'))
+          ? `<img src="${req.avatar_data}" alt="avatar">`
+          : escapeHtml((req.username || '?').charAt(0).toUpperCase());
+        const tagHtml = req.tag ? `<span class="badge badge-dev" style="padding:1px 5px; font-size:9.5px;">🔨 ${escapeHtml(req.tag)}</span>` : '';
+        const timeAgo = formatTimeAgo(req.created_at);
+
+        return `
+          <div class="friend-card" style="cursor:default;">
+            <div class="friend-row-main">
+              <div class="friend-avatar-wrap">
+                <div class="friend-avatar">${avatarHtml}</div>
+              </div>
+              <div class="friend-info">
+                <div class="friend-name">
+                  <span>@${escapeHtml(req.username)}</span>
+                  ${tagHtml}
+                </div>
+                <div style="font-size:11px; color:var(--muted);">${timeAgo}</div>
+              </div>
+            </div>
+            <div class="friend-actions-row">
+              <button class="btn btn-primary btn-sm" style="padding:3px 9px; font-size:11px;" onclick="handleAcceptFriend('${req.sender_id}', '${escapeHtml(req.username)}')">✓ Accept</button>
+              <button class="btn btn-secondary btn-sm" style="padding:3px 9px; font-size:11px;" onclick="handleRejectFriend('${req.sender_id}', '${escapeHtml(req.username)}')">✕ Decline</button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function renderPendingList() {
+      const container = document.getElementById('friendsListContainer');
+      if (!container) return;
+
+      const badge = document.getElementById('subtabCountPending');
+      if (badge) badge.innerText = pendingRequestsList.length;
+
+      if (pendingRequestsList.length === 0) {
+        container.innerHTML = `
+          <div style="text-align:center; padding:36px 14px; color:var(--muted); font-size:13px;">
+            <div style="font-size:32px; margin-bottom:8px;">⏳</div>
+            <div>No pending outgoing requests.</div>
+            <div style="font-size:11.5px; margin-top:4px; color:var(--muted);">Requests you send will appear here until accepted.</div>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = pendingRequestsList.map(req => {
+        const avatarHtml = (req.avatar_data && req.avatar_data.startsWith('data:image'))
+          ? `<img src="${req.avatar_data}" alt="avatar">`
+          : escapeHtml((req.username || '?').charAt(0).toUpperCase());
+        const tagHtml = req.tag ? `<span class="badge badge-dev" style="padding:1px 5px; font-size:9.5px;">🔨 ${escapeHtml(req.tag)}</span>` : '';
+        const timeAgo = formatTimeAgo(req.created_at);
+
+        return `
+          <div class="friend-card" style="cursor:default;">
+            <div class="friend-row-main">
+              <div class="friend-avatar-wrap">
+                <div class="friend-avatar">${avatarHtml}</div>
+              </div>
+              <div class="friend-info">
+                <div class="friend-name">
+                  <span>@${escapeHtml(req.username)}</span>
+                  ${tagHtml}
+                </div>
+                <div style="font-size:11px; color:var(--muted);">Pending response... · ${timeAgo}</div>
+              </div>
+            </div>
+            <div class="friend-actions-row">
+              <button class="btn btn-danger btn-sm" style="padding:3px 9px; font-size:11px;" onclick="cancelPendingRequest('${req.id}', '${escapeHtml(req.username)}');" title="Cancel friend request">
+                ✕ Cancel
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
     }
 
     function renderFriendRequests() {
@@ -2542,18 +2752,18 @@
 
         if (!res || res.success === false) {
           try {
-            await fetch(`${SUPABASE_URL}/rest/v1/speg_friends?user_id=eq.${currentUser.id}&friend_id=eq.${friendId}`, {
+            await fetch(`${EMBEDDED_URL}/rest/v1/speg_friends?user_id=eq.${currentUser.id}&friend_id=eq.${friendId}`, {
               method: 'DELETE',
               headers: {
-                'apikey': SUPABASE_ANON_KEY,
-                'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+                'apikey': EMBEDDED_ANON,
+                'Authorization': `Bearer ${EMBEDDED_ANON}`
               }
             });
-            await fetch(`${SUPABASE_URL}/rest/v1/speg_friends?user_id=eq.${friendId}&friend_id=eq.${currentUser.id}`, {
+            await fetch(`${EMBEDDED_URL}/rest/v1/speg_friends?user_id=eq.${friendId}&friend_id=eq.${currentUser.id}`, {
               method: 'DELETE',
               headers: {
-                'apikey': SUPABASE_ANON_KEY,
-                'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+                'apikey': EMBEDDED_ANON,
+                'Authorization': `Bearer ${EMBEDDED_ANON}`
               }
             });
             res = { success: true };
@@ -2572,6 +2782,38 @@
           loadSocialData();
         } else {
           showToast((res && res.error) || "Failed to unfriend.");
+        }
+      } catch (err) {
+        showToast(`Error: ${err.message}`);
+      }
+    }
+
+    async function cancelPendingRequest(targetId, targetUsername) {
+      if (!currentUser || !currentUser.id) return;
+      if (!confirm(`Cancel outgoing friend request to @${targetUsername}?`)) return;
+      try {
+        let res = await callRpc("speg_reject_friend", {
+          p_user_id: currentUser.id,
+          p_requester_id: targetId
+        });
+        if (!res || res.success === false) {
+          try {
+            await fetch(`${EMBEDDED_URL}/rest/v1/speg_friends?user_id=eq.${currentUser.id}&friend_id=eq.${targetId}&status=eq.pending`, {
+              method: 'DELETE',
+              headers: {
+                'apikey': EMBEDDED_ANON,
+                'Authorization': `Bearer ${EMBEDDED_ANON}`
+              }
+            });
+            res = { success: true };
+          } catch (e2) {}
+        }
+
+        if (res && res.success) {
+          showToast(`Cancelled friend request to @${targetUsername}.`);
+          loadSocialData();
+        } else {
+          showToast((res && res.error) || "Failed to cancel request.");
         }
       } catch (err) {
         showToast(`Error: ${err.message}`);
