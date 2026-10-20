@@ -1452,22 +1452,24 @@
     }
     .pricing-grid {
       display: grid;
-      grid-template-columns: repeat(5, 1fr);
-      gap: 16px;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 20px;
       margin-top: 36px;
       align-items: stretch;
+      max-width: 1200px;
+      margin-left: auto;
+      margin-right: auto;
     }
-    @media (max-width: 1200px) {
+    @media (max-width: 1080px) {
       .pricing-grid {
-        grid-template-columns: repeat(3, 1fr);
+        grid-template-columns: repeat(2, 1fr);
+        max-width: 760px;
       }
     }
-    @media (max-width: 768px) {
+    @media (max-width: 640px) {
       .pricing-grid {
         grid-template-columns: 1fr;
         max-width: 440px;
-        margin-left: auto;
-        margin-right: auto;
       }
     }
 
@@ -1978,38 +1980,13 @@
       <!-- Pricing Showcase Section -->
       <section class="section-wrap pricing-section" id="pricingSection">
         <div class="section-hdr">
-          <div class="pricing-pill">
-            <span class="pulse-dot"></span>
-            <span>Flexible License Access</span>
-          </div>
-          <h2>Simple, Transparent Pricing</h2>
-          <p>Instant automated key delivery upon checkout. Unlocks every module, zero-latency scripts, and automatic updates.</p>
+          <h2>Pricing</h2>
+          <p>Instant key delivery upon checkout. Unlocks every module, presets, and zero-latency scripts.</p>
         </div>
 
         <!-- Pricing Cards Grid -->
         <div class="pricing-grid">
-          <!-- Tier 1: 1 Day -->
-          <div class="pricing-card" data-tier="1 Day" data-price="1.99" data-duration="24 Hours Access" onclick="selectPricingTier(this)">
-            <div class="pricing-card-header">
-              <span class="tier-name">1 Day</span>
-              <span class="tier-tag">Trial Pass</span>
-            </div>
-            <div class="tier-price-wrap">
-              <span class="currency">$</span>
-              <span class="price">1.99</span>
-              <span class="period">/ 24 hrs</span>
-            </div>
-            <p class="tier-desc">Test all modules, presets, and macros for a full 24 hours.</p>
-            <ul class="tier-perks">
-              <li><span class="check">✓</span> All 8+ Roblox Tool Modules</li>
-              <li><span class="check">✓</span> Circle Tracker & Custom FOV</li>
-              <li><span class="check">✓</span> Non-blocking Server Manager</li>
-              <li><span class="check">✓</span> Instant License Key Delivery</li>
-            </ul>
-            <button class="pricing-select-btn" type="button">Select Tier</button>
-          </div>
-
-          <!-- Tier 2: 7 Days (Specified by user) -->
+          <!-- Tier 1: 7 Days (Specified by user) -->
           <div class="pricing-card" data-tier="7 Days" data-price="5.99" data-duration="7 Days Access" onclick="selectPricingTier(this)">
             <div class="pricing-card-header">
               <span class="tier-name">7 Days</span>
@@ -2023,14 +2000,14 @@
             <p class="tier-desc">Ideal for competitive gaming weeks, rank climbs, and events.</p>
             <ul class="tier-perks">
               <li><span class="check">✓</span> All 8+ Roblox Tool Modules</li>
-              <li><span class="check">✓</span> Priority HWID Binding</li>
+              <li><span class="check">✓</span> Circle Tracker & Custom FOV</li>
               <li><span class="check">✓</span> Cursor Changer & Macro Engine</li>
-              <li><span class="check">✓</span> Continuous Automated Updates</li>
+              <li><span class="check">✓</span> Live Server Manager & Presets</li>
             </ul>
             <button class="pricing-select-btn" type="button">Select Tier</button>
           </div>
 
-          <!-- Tier 3: 30 Days (Monthly) -->
+          <!-- Tier 2: 30 Days (Monthly) -->
           <div class="pricing-card popular" data-tier="30 Days" data-price="14.99" data-duration="30 Days Access" onclick="selectPricingTier(this)">
             <div class="tier-badge-popular">Most Popular</div>
             <div class="pricing-card-header">
@@ -2046,13 +2023,13 @@
             <ul class="tier-perks">
               <li><span class="check">✓</span> Everything in Weekly Pass</li>
               <li><span class="check">✓</span> Save 37% vs Weekly Pricing</li>
-              <li><span class="check">✓</span> Instant HWID Resets in Portal</li>
+              <li><span class="check">✓</span> Custom Macro Profiles & Presets</li>
               <li><span class="check">✓</span> Priority Support & Presets</li>
             </ul>
             <button class="pricing-select-btn" type="button">Select Tier</button>
           </div>
 
-          <!-- Tier 4: 90 Days (Quarterly) -->
+          <!-- Tier 3: 90 Days (Quarterly) -->
           <div class="pricing-card" data-tier="90 Days" data-price="27.99" data-duration="90 Days Access" onclick="selectPricingTier(this)">
             <div class="pricing-card-header">
               <span class="tier-name">90 Days</span>
@@ -2073,7 +2050,7 @@
             <button class="pricing-select-btn" type="button">Select Tier</button>
           </div>
 
-          <!-- Tier 5: Lifetime (Specified by user) -->
+          <!-- Tier 4: Lifetime (Specified by user) -->
           <div class="pricing-card selected" data-tier="Lifetime" data-price="40.00" data-duration="Permanent Access (Never expires)" onclick="selectPricingTier(this)">
             <div class="tier-badge-lifetime">Best Value</div>
             <div class="pricing-card-header">
@@ -2088,10 +2065,9 @@
             <p class="tier-desc">Pay once, own forever. Never worry about subscriptions or renewals.</p>
             <ul class="tier-perks">
               <li><span class="check">✓</span> <strong>Permanent Access</strong> — Never Expires</li>
-              <li><span class="check">✓</span> All Future Updates & Version 2.0</li>
+              <li><span class="check">✓</span> All Future Updates Included</li>
               <li><span class="check">✓</span> Exclusive Lifetime Discord Role & Tag</li>
-              <li><span class="check">✓</span> Unlimited HWID Rebinds</li>
-              <li><span class="check">✓</span> Direct Developer Access</li>
+              <li><span class="check">✓</span> All Present & Future Tool Modules</li>
             </ul>
             <button class="pricing-select-btn" type="button">Selected ✓</button>
           </div>
@@ -2585,24 +2561,26 @@
     </div>
     <div class="mobile-menu-links">
       <button class="mobile-nav-item active" id="mobile-nav-btn-home" onclick="navigateMobile('home')">
-        <span class="nav-icon">🏠</span> Home
+        Home
       </button>
       <button class="mobile-nav-item" id="mobile-nav-btn-pricing" onclick="navigateMobile('pricing')">
-        <span class="nav-icon">💎</span> Pricing & Keys
+        Pricing
       </button>
       <button class="mobile-nav-item" id="mobile-nav-btn-features" onclick="navigateMobile('features')">
-        <span class="nav-icon">⚡</span> Features
+        Features
       </button>
       <a class="mobile-nav-item" href="https://github.com/SpegHQ-Testing-Facility/SpegtilityRelease/releases/latest" target="_blank" onclick="closeMobileMenu()">
-        <span class="nav-icon">📥</span> Download .exe
+        Download .exe
       </a>
       <button class="mobile-nav-item nav-admin-btn" id="mobile-nav-btn-admin" onclick="navigateMobile('admin')" style="display:none;">
-        <span class="nav-icon">🛡️</span> Admin Dashboard
+        Admin Dashboard
       </button>
     </div>
     <div class="mobile-menu-footer">
       <button class="mobile-account-btn" onclick="navigateMobile('account')">
-        <div class="nav-user-avatar" id="mobileTopAvatar">👤</div>
+        <div class="nav-user-avatar" id="mobileTopAvatar">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--muted);"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+        </div>
         <div class="mobile-account-info">
           <span class="mobile-account-name" id="mobileTopUsername">Sign In / Account</span>
           <span class="mobile-account-sub">Redeem license & settings</span>
@@ -3956,7 +3934,7 @@
         adminNavBtn.style.display = 'none';
 
         if (mobileTopUsername) mobileTopUsername.innerText = "Sign In / Account";
-        if (mobileTopAvatar) mobileTopAvatar.innerText = "👤";
+        if (mobileTopAvatar) mobileTopAvatar.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--muted);"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>';
         if (mobileAdminBtn) mobileAdminBtn.style.display = 'none';
 
         if (authTabs) authTabs.style.display = 'flex';
