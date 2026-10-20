@@ -1382,7 +1382,10 @@
                 <input type="email" id="loginEmail" class="form-input" placeholder="user@example.com" required>
               </div>
               <div class="form-group">
-                <label>Password</label>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+                  <label style="margin-bottom:0;">Password</label>
+                  <a href="javascript:void(0)" onclick="handleForgotPasswordWeb()" style="color:var(--accent); font-size:12px; text-decoration:none;">Forgot password?</a>
+                </div>
                 <input type="password" id="loginPassword" class="form-input" placeholder="••••••••" required>
               </div>
               <button type="submit" class="btn btn-primary" style="width:100%; justify-content:center; margin-top:8px;" id="loginSubmitBtn">
@@ -1571,6 +1574,19 @@
               <input type="text" id="redeemKeyInput" class="form-input" placeholder="SPEG-XXXX-XXXX-XXXX-XXXX" style="flex:1; min-width:240px; text-transform:uppercase; font-family:var(--mono);" required>
               <button type="submit" class="btn btn-primary" id="redeemSubmitBtn">Redeem Key</button>
             </form>
+
+            <h3 style="font-size:15px; font-weight:700; margin-bottom:10px; margin-top:24px;">Password & Security</h3>
+            <div class="key-info-box" style="padding:14px 18px; margin-bottom:18px;">
+              <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
+                <div>
+                  <div style="font-weight:600; font-size:13.5px;">Account Password</div>
+                  <div style="color:var(--muted); font-size:12px;">Update your password or request a reset link sent to your email.</div>
+                </div>
+                <button type="button" class="btn btn-secondary btn-sm" onclick="handleForgotPasswordWeb(currentUser ? currentUser.email : '')">
+                  Forgot password?
+                </button>
+              </div>
+            </div>
           </div>
 
         </div>
@@ -1738,6 +1754,39 @@
         </div>
         <textarea id="modalGenOutput" class="form-input mono" style="height:110px; font-size:12px; resize:none;" readonly></textarea>
       </div>
+    </div>
+  </div>
+
+  <!-- RESET PASSWORD MODAL -->
+  <div class="modal-backdrop" id="resetPasswordModal">
+    <div class="modal-box" style="max-width:440px;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+        <div>
+          <h2 style="font-size:18px; font-weight:700;">🔑 Reset Password</h2>
+          <p style="font-size:12.5px; color:var(--muted); margin-top:3px;">Enter your new password below to update your Spegtility account.</p>
+        </div>
+        <button class="btn btn-secondary btn-sm" onclick="closeResetPasswordModal()">✕</button>
+      </div>
+
+      <form onsubmit="handleSaveNewPassword(event)">
+        <div class="form-group">
+          <label>Account Email</label>
+          <input type="email" id="resetAccountEmail" class="form-input" readonly style="opacity:0.85; background:var(--input);" required>
+        </div>
+        <div class="form-group">
+          <label>New Password (min 6 characters)</label>
+          <input type="password" id="resetNewPassword" class="form-input" placeholder="Enter new password" minlength="6" required>
+        </div>
+        <div class="form-group">
+          <label>Confirm New Password</label>
+          <input type="password" id="resetConfirmPassword" class="form-input" placeholder="Confirm new password" minlength="6" required>
+        </div>
+        <div id="resetPwFeedback" style="display:none; font-size:12.5px; margin-bottom:12px;"></div>
+
+        <button type="submit" class="btn btn-primary" style="width:100%; justify-content:center; margin-top:6px;" id="btnSaveNewPassword">
+          Save New Password
+        </button>
+      </form>
     </div>
   </div>
 
@@ -1973,6 +2022,289 @@
       } finally {
         btn.disabled = false;
         btn.innerText = "Register Account";
+      }
+    }
+
+    // Forgot Password & Reset Password Logic
+    let recoveryAccessToken = null;
+
+    function openResetPasswordModal(email = '') {
+      const modal = document.getElementById('resetPasswordModal');
+      const emailInput = document.getElementById('resetAccountEmail');
+      const pwInput = document.getElementById('resetNewPassword');
+      const confirmInput = document.getElementById('resetConfirmPassword');
+      const feedback = document.getElementById('resetPwFeedback');
+
+      if (emailInput) {
+        emailInput.value = email || '';
+        if (email) {
+          emailInput.setAttribute('readonly', 'true');
+        } else {
+          emailInput.removeAttribute('readonly');
+        }
+      }
+      if (pwInput) pwInput.value = '';
+      if (confirmInput) confirmInput.value = '';
+      if (feedback) {
+        feedback.style.display = 'none';
+        feedback.innerText = '';
+      }
+      if (modal) {
+        modal.classList.add('open');
+      }
+      setTimeout(() => {
+        if (email) {
+          if (pwInput) pwInput.focus();
+        } else {
+          if (emailInput) emailInput.focus();
+        }
+      }, 100);
+    }
+
+    function closeResetPasswordModal() {
+      const modal = document.getElementById('resetPasswordModal');
+      if (modal) modal.classList.remove('open');
+    }
+
+    async function handleForgotPasswordWeb(defaultEmail = '') {
+      let initial = defaultEmail;
+      if (!initial) {
+        const inputEl = document.getElementById('loginEmail');
+        if (inputEl && inputEl.value) initial = inputEl.value.trim();
+      }
+      const email = prompt("Enter your Spegtility account email to receive a password reset link:", initial || "");
+      if (!email || !email.trim()) return;
+
+      const cleanEmail = email.trim().toLowerCase();
+      if (!cleanEmail.includes('@') || !cleanEmail.includes('.')) {
+        alert("Please enter a valid email address.");
+        return;
+      }
+
+      try {
+        // Ensure user exists in Supabase auth.users so Supabase sends recovery email
+        const adminKey = _resolveAdminKey();
+        if (adminKey) {
+          try {
+            await fetch(`${EMBEDDED_URL}/auth/v1/admin/users`, {
+              method: 'POST',
+              headers: {
+                'apikey': adminKey,
+                'Authorization': `Bearer ${adminKey}`,
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({ email: cleanEmail, email_confirm: true })
+            });
+          } catch (e) {}
+        }
+
+        // Request recovery email
+        const redirectUrl = window.location.origin + window.location.pathname;
+        const res = await fetch(`${EMBEDDED_URL}/auth/v1/recover?redirect_to=${encodeURIComponent(redirectUrl)}`, {
+          method: 'POST',
+          headers: {
+            'apikey': EMBEDDED_ANON,
+            'Authorization': `Bearer ${EMBEDDED_ANON}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ email: cleanEmail })
+        });
+
+        if (res.status === 200) {
+          alert(`Password reset link sent to ${cleanEmail}!\n\nPlease check your email inbox and click the reset link to choose your new password.`);
+        } else if (res.status === 429) {
+          alert("For security purposes, you can only request a password reset link once per minute. Please check your inbox or wait a moment.");
+        } else {
+          const data = await res.json().catch(() => ({}));
+          alert(`Could not send reset link: ${data.msg || data.message || res.statusText}`);
+        }
+      } catch (err) {
+        alert(`Error: ${err.message}`);
+      }
+    }
+
+    async function handleSaveNewPassword(event) {
+      event.preventDefault();
+      const emailInput = document.getElementById('resetAccountEmail');
+      const pwInput = document.getElementById('resetNewPassword');
+      const confirmInput = document.getElementById('resetConfirmPassword');
+      const feedback = document.getElementById('resetPwFeedback');
+      const btn = document.getElementById('btnSaveNewPassword');
+
+      const email = (emailInput?.value || '').trim().toLowerCase();
+      const newPassword = pwInput?.value || '';
+      const confirmPassword = confirmInput?.value || '';
+
+      if (!email || !email.includes('@')) {
+        if (feedback) {
+          feedback.style.display = 'block';
+          feedback.style.color = 'var(--danger)';
+          feedback.innerText = 'Please enter a valid email address.';
+        }
+        return;
+      }
+
+      if (newPassword.length < 6) {
+        if (feedback) {
+          feedback.style.display = 'block';
+          feedback.style.color = 'var(--danger)';
+          feedback.innerText = 'Password must be at least 6 characters long.';
+        }
+        return;
+      }
+
+      if (newPassword !== confirmPassword) {
+        if (feedback) {
+          feedback.style.display = 'block';
+          feedback.style.color = 'var(--danger)';
+          feedback.innerText = 'Passwords do not match. Please re-enter.';
+        }
+        return;
+      }
+
+      btn.disabled = true;
+      btn.innerText = 'Saving new password...';
+      if (feedback) {
+        feedback.style.display = 'block';
+        feedback.style.color = 'var(--muted)';
+        feedback.innerText = 'Updating password...';
+      }
+
+      try {
+        const pwHash = await sha256(`${PASSWORD_SALT}:${newPassword}`);
+
+        // 1. Try speg_reset_password RPC
+        let updated = false;
+        try {
+          const rpcRes = await callRpc('speg_reset_password', {
+            p_email: email,
+            p_new_password_hash: pwHash
+          });
+          if (rpcRes && rpcRes.success) {
+            updated = true;
+          }
+        } catch (e1) {}
+
+        // 2. If RPC not available, update directly via service role key
+        if (!updated) {
+          const adminKey = _resolveAdminKey();
+          if (adminKey) {
+            const patchRes = await fetch(`${EMBEDDED_URL}/rest/v1/speg_users?email=eq.${encodeURIComponent(email)}`, {
+              method: 'PATCH',
+              headers: {
+                'apikey': adminKey,
+                'Authorization': `Bearer ${adminKey}`,
+                'Content-Type': 'application/json',
+                'Prefer': 'return=representation'
+              },
+              body: JSON.stringify({ password_hash: pwHash })
+            });
+            if (patchRes.ok) {
+              updated = true;
+            }
+          }
+        }
+
+        // 3. Update Supabase Auth user record
+        if (recoveryAccessToken) {
+          try {
+            await fetch(`${EMBEDDED_URL}/auth/v1/user`, {
+              method: 'PUT',
+              headers: {
+                'apikey': EMBEDDED_ANON,
+                'Authorization': `Bearer ${recoveryAccessToken}`,
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({ password: newPassword })
+            });
+          } catch (e2) {}
+        } else {
+          const adminKey = _resolveAdminKey();
+          if (adminKey) {
+            try {
+              const usersRes = await fetch(`${EMBEDDED_URL}/auth/v1/admin/users`, {
+                headers: {
+                  'apikey': adminKey,
+                  'Authorization': `Bearer ${adminKey}`
+                }
+              });
+              if (usersRes.ok) {
+                const uData = await usersRes.json();
+                const matching = (uData.users || []).find(u => (u.email || '').toLowerCase() === email);
+                if (matching && matching.id) {
+                  await fetch(`${EMBEDDED_URL}/auth/v1/admin/users/${matching.id}`, {
+                    method: 'PUT',
+                    headers: {
+                      'apikey': adminKey,
+                      'Authorization': `Bearer ${adminKey}`,
+                      'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ password: newPassword })
+                  });
+                }
+              }
+            } catch (e3) {}
+          }
+        }
+
+        if (!updated) {
+          throw new Error('Could not update password in database. Please verify your email.');
+        }
+
+        // Clear hash and recovery query params from URL
+        history.replaceState(null, '', window.location.pathname);
+        recoveryAccessToken = null;
+
+        closeResetPasswordModal();
+        alert("Your new password has been saved successfully!\n\nYou can now sign in with your new password.");
+
+        // Direct user to Sign In
+        showSection('account');
+        setAuthTab('login');
+        const loginEmailInput = document.getElementById('loginEmail');
+        if (loginEmailInput) {
+          loginEmailInput.value = email;
+        }
+        const loginPwInput = document.getElementById('loginPassword');
+        if (loginPwInput) {
+          loginPwInput.value = '';
+          loginPwInput.focus();
+        }
+      } catch (err) {
+        if (feedback) {
+          feedback.style.display = 'block';
+          feedback.style.color = 'var(--danger)';
+          feedback.innerText = `Error: ${err.message}`;
+        }
+      } finally {
+        btn.disabled = false;
+        btn.innerText = 'Save New Password';
+      }
+    }
+
+    function checkPasswordRecovery() {
+      let hash = window.location.hash || '';
+      if (hash.startsWith('#')) hash = hash.substring(1);
+      const hashParams = new URLSearchParams(hash);
+      const searchParams = new URLSearchParams(window.location.search);
+
+      const type = hashParams.get('type') || searchParams.get('type');
+      const accessToken = hashParams.get('access_token') || searchParams.get('access_token');
+
+      if (type === 'recovery' || (accessToken && type === 'recovery') || (hash.includes('type=recovery'))) {
+        let email = '';
+        if (accessToken) {
+          try {
+            const parts = accessToken.split('.');
+            if (parts.length === 3) {
+              const payload = JSON.parse(atob(parts[1]));
+              if (payload.email) email = payload.email;
+            }
+          } catch (e) {}
+        }
+        recoveryAccessToken = accessToken;
+        showSection('account');
+        openResetPasswordModal(email);
       }
     }
 
@@ -3341,6 +3673,7 @@
       } catch (e) {}
 
       updateAuthState();
+      checkPasswordRecovery();
     })();
   </script>
 </body>
